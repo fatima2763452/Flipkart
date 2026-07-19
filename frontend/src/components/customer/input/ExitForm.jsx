@@ -2,6 +2,26 @@ import React, { useState } from 'react';
 import api from '../../../services/api';
 import TradeReceipt from '../TradeReceipt';
 
+const getTodayDateValue = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const formatInputDate = (value) => {
+  if (!value) return getTodayDateValue();
+
+  const dateValue = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(dateValue.getTime())) return getTodayDateValue();
+
+  const year = dateValue.getFullYear();
+  const month = String(dateValue.getMonth() + 1).padStart(2, '0');
+  const day = String(dateValue.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeData }) => {
   const [symbol, setSymbol] = useState('');
   const [action, setAction] = useState('sell'); // default to sell for exit
@@ -11,7 +31,7 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
   const [ltp, setLtp] = useState('');
   const [marginRs, setMarginRs] = useState('');
   const [marginPct, setMarginPct] = useState('');
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(getTodayDateValue());
   const [brokerage, setBrokerage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
@@ -31,9 +51,17 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
       setMarginRs(editingTradeData.marginRs || '');
       setMarginPct(editingTradeData.marginPct || '');
       if (editingTradeData.date) {
-        try { setDate(new Date(editingTradeData.date).toISOString().split('T')[0]); } catch(e) {}
+        setDate(formatInputDate(editingTradeData.date));
       }
-      setBrokerage(editingTradeData.brokeragePct || '');
+      if (editingTradeData.brokerageType === 'rupees') {
+        setBrokerage((editingTradeData.brokerageValue || '').toString());
+      } else {
+        setBrokerage(
+          editingTradeData.brokeragePct && editingTradeData.brokeragePct !== 0.01 
+            ? editingTradeData.brokeragePct.toString() 
+            : ''
+        );
+      }
     }
   }, [editingTradeData]);
 
@@ -41,9 +69,12 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
   const priceNum = parseFloat(price) || 0;
   const estimatedTotal = qtyNum * priceNum;
   
-  // No Brokerage for Exits
-  const activeBrokeragePct = 0;
-  const brokerageFee = 0;
+  // Brokerage: default to percentage 0.01% when empty; treat user input as flat rupees
+  const isFlat = brokerage !== '';
+  const brokerageType = isFlat ? 'rupees' : 'percentage';
+  const brokerageValue = brokerage === '' ? 0.01 : (parseFloat(brokerage) || 0);
+
+  const brokerageFee = isFlat ? brokerageValue : (estimatedTotal * brokerageValue) / 100;
 
   const showToast = (message, type = 'success') => {
     setToast({ show: true, message, type });
@@ -68,17 +99,18 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
         ltp: parseFloat(ltp) || 0,
         marginRs: parseFloat(marginRs) || 0,
         marginPct: parseFloat(marginPct) || 0,
-        date: date,
-        brokeragePct: activeBrokeragePct
+        date: date || getTodayDateValue(),
+        brokerageType: brokerageType,
+        brokerageValue: brokerageValue
       };
 
-      const res = await api.post('/trades', payload);
       let savedData;
       if (editingId) {
-        const res = await api.put(`/trades/${editingId}`, payload);
+        const res = await api.put(`/trades/edit/${editingId}`, payload);
         showToast(`Successfully updated EXIT ${action.toUpperCase()} for ${qtyNum} ${symbol}`, 'success');
         savedData = res.data;
       } else {
+        const res = await api.post('/trades', payload);
         showToast(`Successfully saved EXIT ${action.toUpperCase()} for ${qtyNum} ${symbol}`, 'success');
         savedData = res.data;
       }
@@ -93,7 +125,7 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
       setLtp('');
       setMarginRs('');
       setMarginPct('');
-      setDate('');
+      setDate(getTodayDateValue());
       setBrokerage('');
     } catch (err) {
       console.error(err);
@@ -115,9 +147,17 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
       setMarginRs((receiptData.marginRs || '').toString());
       setMarginPct((receiptData.marginPct || '').toString());
       if (receiptData.date) {
-        setDate(new Date(receiptData.date).toISOString().split('T')[0]);
+        setDate(formatInputDate(receiptData.date));
       }
-      setBrokerage((receiptData.brokeragePct || '').toString());
+      if (receiptData.brokerageType === 'rupees') {
+        setBrokerage((receiptData.brokerageValue || '').toString());
+      } else {
+        setBrokerage(
+          receiptData.brokeragePct && receiptData.brokeragePct !== 0.01
+            ? receiptData.brokeragePct.toString()
+            : ''
+        );
+      }
       setReceiptData(null);
     }
   };
@@ -133,7 +173,7 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
     setLtp('');
     setMarginRs('');
     setMarginPct('');
-    setDate('');
+    setDate(getTodayDateValue());
     setBrokerage('');
   };
 
@@ -287,26 +327,51 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
         </div>
       </div>
 
-      {/* Execution Date */}
-      <div className="mb-6">
-        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Execution Date</label>
-        <div className="relative">
-          <input 
-            type="date" 
-            required
-            value={date}
-            onChange={e => setDate(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg py-3 px-4 text-sm font-mono text-slate-200 focus:border-amber-500 outline-none transition-all appearance-none [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
-          />
-          <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">calendar_month</span>
+      {/* Execution Date & Brokerage */}
+      <div className="flex gap-4 mb-6">
+        <div className="flex-[1.2]">
+          <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Execution Date</label>
+          <div className="relative">
+            <input 
+              type="date" 
+              required
+              value={date}
+              onChange={e => setDate(e.target.value)}
+              className="w-full bg-slate-950 border border-slate-800 rounded-lg py-3 px-4 text-sm font-mono text-slate-200 focus:border-amber-500 outline-none transition-all appearance-none [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+            />
+            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">calendar_month</span>
+          </div>
+        </div>
+        <div className="flex-[0.8]">
+          <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Brokerage</label>
+          <div className="relative">
+            <input 
+              type="number" 
+              step="0.01"
+              value={brokerage}
+              onChange={e => setBrokerage(e.target.value)}
+              placeholder="0.01"
+              className="w-full bg-slate-950 border border-slate-800 rounded-lg py-3 pl-4 pr-8 text-sm font-mono text-slate-200 placeholder:text-slate-600 focus:border-amber-500 outline-none transition-all"
+            />
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 font-mono text-sm">
+              {brokerage === '' ? '%' : '₹'}
+            </span>
+          </div>
+          <p className="text-[10px] text-slate-500 mt-1">
+            {brokerage === '' ? 'Default: 0.01% of value' : `Flat: ₹${parseFloat(brokerage) || 0}`}
+          </p>
         </div>
       </div>
-
+ 
       {/* Estimated Total Box */}
       <div className="bg-slate-800/40 border-l-4 border-amber-400 rounded-r-lg p-4 mb-6 flex justify-between items-center">
         <div>
           <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Estimated Total</div>
           <div className="text-2xl font-mono font-bold text-white tracking-tight">{formatCurrency(estimatedTotal)}</div>
+        </div>
+        <div className="text-right">
+          <div className="text-[10px] font-bold uppercase tracking-wider mb-1 text-amber-400">Brokerage</div>
+          <div className="text-sm font-mono text-slate-500">{formatCurrency(brokerageFee)}</div>
         </div>
       </div>
 

@@ -1,9 +1,21 @@
 const Entry = require('../models/Entry');
 const Exit = require('../models/Exit');
 
+const normalizeTradeDate = (value) => {
+  if (!value) return new Date();
+
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    const [year, month, day] = value.split('-').map(Number);
+    return new Date(Date.UTC(year, month - 1, day));
+  }
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? new Date() : parsed;
+};
+
 const createTrade = async (req, res) => {
   try {
-    const { customerId, type, action, symbol, quantity, lot, price, ltp, marginRs, marginPct, date, brokeragePct } = req.body;
+    const { customerId, type, action, symbol, quantity, lot, price, ltp, marginRs, marginPct, date, brokeragePct, brokerageType, brokerageValue } = req.body;
 
     if (!customerId || !type || !action || !symbol || !quantity || !price || !ltp || !date) {
       return res.status(400).json({ message: 'Please provide all required fields' });
@@ -14,12 +26,19 @@ const createTrade = async (req, res) => {
     const estimatedTotal = qtyNum * priceNum;
     
     // Server-side brokerage calculation
-    let activeBrokeragePct = parseFloat(brokeragePct) || 0.01;
-    let brokerageFee = (estimatedTotal * activeBrokeragePct) / 100;
+    let activeBrokerageType = brokerageType || 'percentage';
+    let valInput = (brokerageValue !== undefined && brokerageValue !== '') ? brokerageValue : brokeragePct;
+    let activeBrokerageValue = valInput !== undefined && valInput !== '' ? parseFloat(valInput) : 0.01;
     
-    if (type === 'exit') {
+    let activeBrokeragePct = 0.01;
+    let brokerageFee = 0;
+
+    if (activeBrokerageType === 'rupees') {
       activeBrokeragePct = 0;
-      brokerageFee = 0;
+      brokerageFee = isNaN(activeBrokerageValue) ? 0 : activeBrokerageValue;
+    } else {
+      activeBrokeragePct = isNaN(activeBrokerageValue) ? 0.01 : activeBrokerageValue;
+      brokerageFee = (estimatedTotal * activeBrokeragePct) / 100;
     }
 
     const tradeData = {
@@ -32,7 +51,9 @@ const createTrade = async (req, res) => {
       ltp: parseFloat(ltp) || 0,
       marginRs: parseFloat(marginRs) || (parseFloat(marginPct) > 0 ? (estimatedTotal * parseFloat(marginPct) / 100) : 0),
       marginPct: parseFloat(marginPct) || 0,
-      date,
+      date: normalizeTradeDate(date),
+      brokerageType: activeBrokerageType,
+      brokerageValue: activeBrokerageType === 'rupees' ? (isNaN(activeBrokerageValue) ? 0 : activeBrokerageValue) : activeBrokeragePct,
       brokeragePct: activeBrokeragePct,
       brokerageFee,
       estimatedTotal
@@ -114,6 +135,7 @@ const getCustomerHoldings = async (req, res) => {
       if (trade.customTotalPnl !== undefined) holding.customTotalPnl = trade.customTotalPnl;
       holding.totalBrokerage += (trade.brokerageFee || 0); // Accumulate brokerage
       holding.lastUpdated = new Date(trade.createdAt || trade.date); // Keep track of latest interaction
+      holding.date = trade.date; // Latest trade date
       const effectiveMargin = trade.marginRs || (trade.marginPct ? (trade.estimatedTotal * trade.marginPct / 100) : 0);
       holding.totalMargin += effectiveMargin; // Accumulate margin
 
@@ -171,7 +193,8 @@ const getCustomerHoldings = async (req, res) => {
         totalMargin: h.totalMargin,
         upnl: h.customUpnl !== undefined ? h.customUpnl : upnl,
         totalPnl: h.customTotalPnl !== undefined ? h.customTotalPnl : upnl,
-        lastUpdated: h.lastUpdated
+        lastUpdated: h.lastUpdated,
+        date: h.date
       };
     })
     .filter(h => h.type !== 'Closed') // Filter out fully exited positions
@@ -245,9 +268,16 @@ const editHolding = async (req, res) => {
     
     if (brokerageFee !== undefined) {
       latestEntry.brokerageFee = parseFloat(brokerageFee) || 0;
-      latestEntry.brokeragePct = latestEntry.estimatedTotal > 0 ? (latestEntry.brokerageFee / latestEntry.estimatedTotal) * 100 : 0;
+      latestEntry.brokerageType = 'rupees';
+      latestEntry.brokerageValue = latestEntry.brokerageFee;
+      latestEntry.brokeragePct = 0;
     } else {
-      latestEntry.brokerageFee = (latestEntry.estimatedTotal * latestEntry.brokeragePct) / 100;
+      if (latestEntry.brokerageType === 'rupees') {
+        latestEntry.brokerageFee = latestEntry.brokerageValue || 0;
+        latestEntry.brokeragePct = 0;
+      } else {
+        latestEntry.brokerageFee = (latestEntry.estimatedTotal * (latestEntry.brokerageValue || latestEntry.brokeragePct || 0.01)) / 100;
+      }
     }
 
     await latestEntry.save();
@@ -280,7 +310,7 @@ const deleteExit = async (req, res) => {
 const editTrade = async (req, res) => {
   try {
     const { id } = req.params;
-    const { type, action, symbol, quantity, lot, price, ltp, marginRs, marginPct, date, brokeragePct } = req.body;
+    const { type, action, symbol, quantity, lot, price, ltp, marginRs, marginPct, date, brokeragePct, brokerageType, brokerageValue } = req.body;
 
     if (!id || !type || !action || !symbol || !quantity || !price || !ltp || !date) {
       return res.status(400).json({ message: 'Please provide all required fields' });
@@ -290,12 +320,20 @@ const editTrade = async (req, res) => {
     const priceNum = parseFloat(price) || 0;
     const estimatedTotal = qtyNum * priceNum;
     
-    let activeBrokeragePct = parseFloat(brokeragePct) || 0.01;
-    let brokerageFee = (estimatedTotal * activeBrokeragePct) / 100;
+    // Server-side brokerage calculation
+    let activeBrokerageType = brokerageType || 'percentage';
+    let valInput = (brokerageValue !== undefined && brokerageValue !== '') ? brokerageValue : brokeragePct;
+    let activeBrokerageValue = valInput !== undefined && valInput !== '' ? parseFloat(valInput) : 0.01;
     
-    if (type === 'exit') {
+    let activeBrokeragePct = 0.01;
+    let brokerageFee = 0;
+
+    if (activeBrokerageType === 'rupees') {
       activeBrokeragePct = 0;
-      brokerageFee = 0;
+      brokerageFee = isNaN(activeBrokerageValue) ? 0 : activeBrokerageValue;
+    } else {
+      activeBrokeragePct = isNaN(activeBrokerageValue) ? 0.01 : activeBrokerageValue;
+      brokerageFee = (estimatedTotal * activeBrokeragePct) / 100;
     }
 
     const tradeData = {
@@ -307,7 +345,9 @@ const editTrade = async (req, res) => {
       ltp: parseFloat(ltp) || 0,
       marginRs: parseFloat(marginRs) || (parseFloat(marginPct) > 0 ? (estimatedTotal * parseFloat(marginPct) / 100) : 0),
       marginPct: parseFloat(marginPct) || 0,
-      date,
+      date: normalizeTradeDate(date),
+      brokerageType: activeBrokerageType,
+      brokerageValue: activeBrokerageType === 'rupees' ? (isNaN(activeBrokerageValue) ? 0 : activeBrokerageValue) : activeBrokeragePct,
       brokeragePct: activeBrokeragePct,
       brokerageFee,
       estimatedTotal

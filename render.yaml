@@ -1,0 +1,31 @@
+services:
+  # Backend Web Service
+  - type: web
+    name: trading-billing-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGO_URI
+        sync: false # You will need to provide this MongoDB connection string in the Render Dashboard
+      - key: JWT_SECRET
+        generateValue: true # Generates a random secure secret automatically
+      - key: PORT
+        value: 5000
+
+  # Frontend Static Site
+  - type: web
+    name: trading-billing-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    routes:
+      # React Router redirect fallback rule
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_URL
+        sync: false # Set this in the Render dashboard to: https://trading-billing-backend.onrender.com/api

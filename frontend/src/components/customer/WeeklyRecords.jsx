@@ -98,7 +98,7 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
               className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1 shadow-lg shadow-blue-900/20"
             >
               <span className="material-symbols-outlined text-[16px]">receipt_long</span>
-              INVOICE
+              STATEMENT
             </button>
           </div>
         </div>
@@ -224,7 +224,7 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
                     </span>
                   </div>
                   <div className="text-[10px] text-slate-400 mt-1">
-                    {new Date(item.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                    {new Date(item.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' })}
                   </div>
                 </div>
               </div>

@@ -85,9 +85,9 @@ const formatPDFProfitLoss = (n) => {
 const formatDDMMM = (dateStr) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
-    const day = date.getDate();
+    const day = date.getUTCDate();
     const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    return `${day} ${months[date.getMonth()]}`;
+    return `${day} ${months[date.getUTCMonth()]}`;
 };
 
 export default function Invoice() {
@@ -217,7 +217,7 @@ export default function Invoice() {
                 exitPrice,
                 netPnl,
                 totalBrokerage: finalBrokerage,
-                dateStr: new Date(order.date || order.createdAt).toLocaleDateString()
+                dateStr: new Date(order.date || order.createdAt).toLocaleDateString('en-GB', { timeZone: 'UTC' })
             };
         });
 
@@ -273,7 +273,7 @@ export default function Invoice() {
             // Invoice No
             pdf.setFont(activeFont, 'bold');
             pdf.setFontSize(12);
-            pdf.text(`Invoice No. ${invoiceId}`, rightX, cursorY + 15, { align: 'right' });
+            pdf.text(`Statement No. ${invoiceId}`, rightX, cursorY + 15, { align: 'right' });
 
             // Client Name
             pdf.setFont(activeFont, 'bold');
@@ -512,7 +512,7 @@ export default function Invoice() {
             pdf.text('RADHE BROCKRAGE PVT. LTD.', pageW / 2, cursorY, { align: 'center' });
 
             // File Name Safe Formatting
-            const safeClientName = (clientName || 'Invoice').replace(/[^a-zA-Z0-9]/g, '_');
+            const safeClientName = (clientName || 'Statement').replace(/[^a-zA-Z0-9]/g, '_');
             const d = new Date();
             const formattedDate = `${d.getDate().toString().padStart(2, '0')}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getFullYear().toString().slice(-2)}`;
 
@@ -535,7 +535,7 @@ export default function Invoice() {
                         <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full dark:text-white">
                             <ArrowLeft className="w-5 h-5" />
                         </button>
-                        <h1 className="text-xl font-bold dark:text-white">Generate Tax Invoice</h1>
+                        <h1 className="text-xl font-bold dark:text-white">Generate Tax Statement</h1>
                     </div>
 
                     <div className="space-y-4">
@@ -596,7 +596,7 @@ export default function Invoice() {
                             disabled={loading}
                             className="w-full bg-[#00B050] hover:bg-[#009040] text-white font-bold py-3 rounded-lg transition-colors flex justify-center items-center gap-2 mt-4"
                         >
-                            {loading ? 'Loading Data...' : 'Generate Invoice'}
+                            {loading ? 'Loading Data...' : 'Generate Statement'}
                         </button>
 
                        
@@ -632,7 +632,7 @@ export default function Invoice() {
                     </div>
 
                     <div className="text-right mt-2">
-                        <h2 className="text-lg font-bold text-slate-900">Invoice No. {invoiceId}</h2>
+                        <h2 className="text-lg font-bold text-slate-900">Statement No. {invoiceId}</h2>
                         <div className="mt-2.5 space-y-1">
                             <p className="text-lg font-bold text-slate-900">{clientName}</p>
                             <p className="text-sm font-bold text-slate-900">{clientCode}</p>

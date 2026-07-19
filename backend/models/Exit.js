@@ -43,6 +43,15 @@ const exitSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  brokerageType: {
+    type: String,
+    enum: ['percentage', 'rupees'],
+    default: 'percentage',
+  },
+  brokerageValue: {
+    type: Number,
+    default: 0.01,
+  },
   brokeragePct: {
     type: Number,
     default: 0.01,

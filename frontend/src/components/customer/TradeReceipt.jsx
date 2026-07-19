@@ -19,7 +19,10 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
         price: type === 'exit' ? trade.price : (trade.entryPrice || trade.price || ''),
         ltp: type === 'exit' ? trade.ltp : (trade.ltp || ''),
         marginRs: trade.marginRs || '',
-        brokeragePct: trade.brokeragePct || ''
+        brokerageType: trade.brokerageType || 'percentage',
+        brokerageValue: trade.brokerageType === 'rupees' 
+          ? (trade.brokerageValue || '').toString() 
+          : (trade.brokeragePct && trade.brokeragePct !== 0.01 ? trade.brokeragePct.toString() : '')
       });
     }
   }, [trade, isEditing, type]);
@@ -46,7 +49,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const d = new Date(dateStr);
-    return d.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    return d.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' });
   };
 
   const handleDownload = async () => {
@@ -261,6 +264,40 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                     <input type="number" className="w-24 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.ltp} onChange={e => setEditData({...editData, ltp: e.target.value})} />
                   ) : (
                     <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{formatCurrency(isExit ? trade.ltp : trade.price)}</span>
+                  )}
+                </div>
+
+                <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
+                  <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Brokerage</span>
+                  {isEditing ? (
+                    <div className="flex items-center gap-1.5">
+                      <input 
+                        type="number" 
+                        step="0.01" 
+                        className="w-20 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" 
+                        value={editData.brokerageValue} 
+                        onChange={e => setEditData({...editData, brokerageValue: e.target.value})} 
+                        placeholder="0.01"
+                      />
+                      <select 
+                        className="bg-slate-800 text-white rounded px-1.5 py-1 text-xs outline-none cursor-pointer"
+                        value={editData.brokerageType} 
+                        onChange={e => setEditData({...editData, brokerageType: e.target.value})}
+                      >
+                        <option value="percentage">%</option>
+                        <option value="rupees">₹</option>
+                      </select>
+                    </div>
+                  ) : (
+                    <span className={`text-sm font-bold flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                      {trade.brokerageType === 'percentage' && (
+                        <span className="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">{trade.brokeragePct}%</span>
+                      )}
+                      {trade.brokerageType === 'rupees' && (
+                        <span className="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">Flat</span>
+                      )}
+                      {formatCurrency(trade.brokerageFee || 0)}
+                    </span>
                   )}
                 </div>
 

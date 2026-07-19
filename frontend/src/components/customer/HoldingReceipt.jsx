@@ -54,9 +54,10 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
   }, [onClose]);
 
   const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(val);
-  const formatDateTime = () => {
-    const d = new Date();
-    return d.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' });
   };
 
   const handleDownload = async () => {
@@ -173,7 +174,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                   ENTRY DATE
                 </div>
                 <div className={`text-[15px] font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                  {formatDateTime()}
+                  {formatDate(holding.date || holding.lastUpdated)}
                 </div>
               </div>
               <div className={`p-4 rounded-xl border flex flex-col items-center justify-center text-center ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>

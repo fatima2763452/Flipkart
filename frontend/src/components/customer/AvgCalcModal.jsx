@@ -50,50 +50,50 @@ const AvgCalcModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
-      <div className="bg-slate-900 border border-slate-700/50 rounded-xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="p-4 border-b border-slate-800/80 flex justify-between items-center bg-slate-950">
-          <h2 className="font-bold text-slate-100 flex items-center gap-2">
-            <span className="material-symbols-outlined text-blue-400">calculate</span>
+      <div className="bg-slate-900 border border-slate-700/50 rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden flex flex-col max-h-[95vh]">
+        <div className="p-5 border-b border-slate-800/80 flex justify-between items-center bg-slate-950">
+          <h2 className="font-bold text-slate-100 flex items-center gap-2.5 text-xl">
+            <span className="material-symbols-outlined text-blue-400 text-3xl">calculate</span>
             Average Calculator
           </h2>
-          <div className="flex gap-1">
-            <button onClick={handleReset} title="Reset All" className="text-slate-400 hover:text-rose-400 p-1 rounded-md hover:bg-slate-800 transition-colors flex items-center justify-center">
-              <span className="material-symbols-outlined text-[20px]">restart_alt</span>
+          <div className="flex gap-2">
+            <button onClick={handleReset} title="Reset All" className="text-slate-400 hover:text-rose-400 p-2 rounded-lg hover:bg-slate-800 transition-colors flex items-center justify-center">
+              <span className="material-symbols-outlined text-[24px]">restart_alt</span>
             </button>
-            <button onClick={onClose} title="Close" className="text-slate-400 hover:text-white p-1 rounded-md hover:bg-slate-800 transition-colors flex items-center justify-center">
-              <span className="material-symbols-outlined text-[20px]">close</span>
+            <button onClick={onClose} title="Close" className="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition-colors flex items-center justify-center">
+              <span className="material-symbols-outlined text-[24px]">close</span>
             </button>
           </div>
         </div>
         
-        <div className="p-4 overflow-y-auto flex-1 space-y-3">
+        <div className="p-6 overflow-y-auto flex-1 space-y-5">
           {entries.map((entry, index) => (
-            <div key={index} className="flex gap-3 items-start bg-slate-800/40 p-3 rounded-lg border border-slate-700/50 relative group">
+            <div key={index} className="flex gap-5 items-start bg-slate-800/40 p-5 rounded-2xl border border-slate-700/50 relative group">
               {entries.length > 1 && (
                 <button 
                   onClick={() => handleRemoveEntry(index)}
-                  className="absolute -top-2 -right-2 bg-slate-700 hover:bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[12px] opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                  className="absolute -top-2.5 -right-2.5 bg-slate-700 hover:bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center text-[13px] opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
                 >
-                  <span className="material-symbols-outlined text-[14px]">close</span>
+                  <span className="material-symbols-outlined text-[18px]">close</span>
                 </button>
               )}
               <div className="flex-1">
-                <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Quantity</label>
+                <label className="text-xs uppercase font-extrabold text-slate-400 mb-2 block tracking-wider">Quantity</label>
                 <input 
                   type="number"
                   value={entry.qty}
                   onChange={(e) => handleChange(index, 'qty', e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm font-mono text-white focus:border-blue-500 focus:outline-none"
+                  className="w-full bg-slate-950 border-2 border-slate-800 rounded-xl px-5 py-4 text-2xl font-bold font-mono text-white focus:border-blue-500 focus:outline-none transition-colors"
                   placeholder="0"
                 />
               </div>
               <div className="flex-1">
-                <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block">Buy Price (₹)</label>
+                <label className="text-xs uppercase font-extrabold text-slate-400 mb-2 block tracking-wider">Buy Price (₹)</label>
                 <input 
                   type="number"
                   value={entry.price}
                   onChange={(e) => handleChange(index, 'price', e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-sm font-mono text-white focus:border-blue-500 focus:outline-none"
+                  className="w-full bg-slate-950 border-2 border-slate-800 rounded-xl px-5 py-4 text-2xl font-bold font-mono text-white focus:border-blue-500 focus:outline-none transition-colors"
                   placeholder="0.00"
                 />
               </div>
@@ -102,9 +102,9 @@ const AvgCalcModal = ({ isOpen, onClose }) => {
           
           <button 
             onClick={handleAddEntry}
-            className="w-full mt-2 border border-dashed border-slate-600 text-slate-400 hover:text-white hover:border-slate-500 hover:bg-slate-800/50 rounded-lg py-2.5 text-sm font-bold flex items-center justify-center gap-2 transition-colors"
+            className="w-full mt-2 border-2 border-dashed border-slate-600 text-slate-300 hover:text-white hover:border-blue-500 hover:bg-blue-500/10 rounded-xl py-3.5 text-base font-bold flex items-center justify-center gap-2 transition-all"
           >
-            <span className="material-symbols-outlined text-[18px]">add</span>
+            <span className="material-symbols-outlined text-[20px]">add</span>
             ADD ANOTHER ENTRY
           </button>
         </div>

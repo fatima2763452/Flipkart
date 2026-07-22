@@ -305,7 +305,7 @@ export default function Invoice() {
             const tableColumns = [
                 { header: 'No.', dataKey: 'idx' },
                 { header: 'STOCK', dataKey: 'stock' },
-                { header: 'TYPE', dataKey: 'type' },
+                { header: 'MODE', dataKey: 'type' },
                 { header: 'AVG. PRICE', dataKey: 'buyPrice' },
                 { header: 'QTY', dataKey: 'qty' },
                 { header: 'EXIT PRICE', dataKey: 'exitPrice' },
@@ -654,7 +654,7 @@ export default function Invoice() {
                             <tr>
                                 <th className="px-4 py-3.5 text-center w-12">No.</th>
                                 <th className="px-4 py-3.5 text-left">STOCK</th>
-                                <th className="px-4 py-3.5 text-center w-20">TYPE</th>
+                                <th className="px-4 py-3.5 text-center w-20">MODE</th>
                                 <th className="px-4 py-3.5 text-right">AVG. PRICE</th>
                                 <th className="px-4 py-3.5 text-center w-24">QTY</th>
                                 <th className="px-4 py-3.5 text-right">EXIT PRICE</th>

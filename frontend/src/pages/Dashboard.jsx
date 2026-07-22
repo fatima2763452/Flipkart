@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import AvgCalcModal from '../components/customer/AvgCalcModal';
 
 const CustomerCard = ({ customer, onClick, onDeleteSwipe }) => {
   const [translateX, setTranslateX] = useState(0);
@@ -86,6 +87,7 @@ const CustomerCard = ({ customer, onClick, onDeleteSwipe }) => {
 const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [customers, setCustomers] = useState([]);
+  const [isAvgCalcOpen, setIsAvgCalcOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newCustomer, setNewCustomer] = useState({ id: '', name: '' });
   const [error, setError] = useState('');
@@ -275,6 +277,9 @@ const Dashboard = () => {
           <button onClick={() => navigate('/recycle-bin')} className="bg-rose-600/20 text-rose-400 border border-rose-500/30 hover:bg-rose-600/30 px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
             <span className="material-symbols-outlined text-[18px]">delete</span> Bin
           </button>
+          <button onClick={() => setIsAvgCalcOpen(true)} className="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors" title="Average Calculator">
+            <span className="material-symbols-outlined text-[18px]">calculate</span> Calc
+          </button>
           <button onClick={() => navigate('/account-opening')} className="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
             <span className="material-symbols-outlined text-[18px]">description</span> Form
           </button>
@@ -358,6 +363,7 @@ const Dashboard = () => {
       >
         <span className="material-symbols-outlined text-[28px]">person_add</span>
       </button>
+      <AvgCalcModal isOpen={isAvgCalcOpen} onClose={() => setIsAvgCalcOpen(false)} />
     </div>
   );
 };

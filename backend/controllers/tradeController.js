@@ -67,9 +67,9 @@ const createTrade = async (req, res) => {
       // Calculate Realized PNL directly from the form since entries/exits are decoupled
       // In Exit Form: 'price' is Entry Price, 'ltp' is Exit Price
       let realizedPnl = 0;
-      if (action.toLowerCase() === 'sell') { // Exiting a Long position
+      if (action.toLowerCase() === 'buy') { // Exiting a Long position
         realizedPnl = (parseFloat(ltp) - priceNum) * qtyNum;
-      } else if (action.toLowerCase() === 'buy') { // Exiting a Short position
+      } else if (action.toLowerCase() === 'sell') { // Exiting a Short position
         realizedPnl = (priceNum - parseFloat(ltp)) * qtyNum;
       }
       
@@ -188,7 +188,9 @@ const getCustomerHoldings = async (req, res) => {
         avgCost,
         lastPrice: h.lastPrice,
         totalInvestment: h.customInvested !== undefined ? h.customInvested : absoluteQty * avgCost,
-        totalValue: absoluteQty * h.lastPrice,
+        totalValue: h.customInvested !== undefined 
+          ? (h.customInvested + (h.customUpnl !== undefined ? h.customUpnl : upnl))
+          : (absoluteQty * avgCost + upnl),
         totalBrokerage: h.totalBrokerage,
         totalMargin: h.totalMargin,
         upnl: h.customUpnl !== undefined ? h.customUpnl : upnl,
@@ -357,12 +359,12 @@ const editTrade = async (req, res) => {
     if (type === 'entry') {
       updatedTrade = await Entry.findByIdAndUpdate(id, tradeData, { new: true });
     } else if (type === 'exit') {
-      let realizedPnl = 0;
-      if (action.toLowerCase() === 'sell') { 
-        realizedPnl = (parseFloat(ltp) - priceNum) * qtyNum;
-      } else if (action.toLowerCase() === 'buy') { 
-        realizedPnl = (priceNum - parseFloat(ltp)) * qtyNum;
-      }
+        let realizedPnl = 0;
+        if (action.toLowerCase() === 'buy') { 
+          realizedPnl = (parseFloat(ltp) - priceNum) * qtyNum;
+        } else if (action.toLowerCase() === 'sell') { 
+          realizedPnl = (priceNum - parseFloat(ltp)) * qtyNum;
+        }
       realizedPnl -= brokerageFee;
       tradeData.realizedPnl = realizedPnl;
 

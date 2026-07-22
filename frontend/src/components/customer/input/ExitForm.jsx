@@ -24,7 +24,7 @@ const formatInputDate = (value) => {
 
 const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeData }) => {
   const [symbol, setSymbol] = useState('');
-  const [action, setAction] = useState('sell'); // default to sell for exit
+  const [action, setAction] = useState('buy'); // default to buy for exit
   const [quantity, setQuantity] = useState('');
   const [lot, setLot] = useState('');
   const [price, setPrice] = useState('');
@@ -43,7 +43,7 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
     if (editingTradeData && editingTradeData.type === 'exit') {
       setEditingId(editingTradeData._id || null);
       setSymbol(editingTradeData.symbol || '');
-      setAction(editingTradeData.action || 'sell');
+      setAction(editingTradeData.action || 'buy');
       setQuantity(editingTradeData.quantity || '');
       setLot(editingTradeData.lot || '');
       setPrice(editingTradeData.price || editingTradeData.avgCost || '');
@@ -139,7 +139,7 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
     if (receiptData) {
       setEditingId(receiptData._id);
       setSymbol(receiptData.symbol);
-      setAction(receiptData.action || 'sell');
+      setAction(receiptData.action || 'buy');
       setQuantity(receiptData.quantity.toString());
       setLot((receiptData.lot || '').toString());
       setPrice((receiptData.price || receiptData.exitPrice || '').toString());

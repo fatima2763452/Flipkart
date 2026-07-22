@@ -18,5 +18,9 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.0",
     "nodemon": "^3.1.14"
+  },
+  "nodemonConfig": {
+    "watch": ["server.js", "config/", "controllers/", "models/", "routes/", ".env"],
+    "ext": "js,json,env"
   }
 }

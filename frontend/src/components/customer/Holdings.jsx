@@ -74,6 +74,8 @@ const Holdings = ({ customer, onEditRequest }) => {
   
   const totalEquity = holdings.reduce((sum, item) => sum + item.totalValue, 0);
   const totalUpnl = holdings.reduce((sum, item) => sum + item.upnl, 0);
+  const totalInvestment = totalEquity - totalUpnl;
+  const totalUpnlPct = totalInvestment ? (totalUpnl / totalInvestment) * 100 : 0;
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
@@ -99,7 +101,7 @@ const Holdings = ({ customer, onEditRequest }) => {
             <div className="flex items-center gap-2">
               <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${totalUpnl >= 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
                 <span className="material-symbols-outlined text-[12px]">{totalUpnl >= 0 ? 'trending_up' : 'trending_down'}</span>
-                {totalUpnl >= 0 ? '+' : ''}{formatCurrency(totalUpnl)}
+                {totalUpnl >= 0 ? '+' : ''}{formatCurrency(totalUpnl)} ({totalUpnl >= 0 ? '+' : ''}{totalUpnlPct.toFixed(2)}%)
               </span>
             </div>
           </div>
@@ -242,6 +244,9 @@ const Holdings = ({ customer, onEditRequest }) => {
                 <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">TOTAL P/L</div>
                 <div className={`font-mono text-xs font-bold ${item.upnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {item.upnl >= 0 ? '+' : ''}{formatCurrency(item.upnl)}
+                  <span className="text-[10px] ml-1 font-semibold opacity-95">
+                    ({item.upnl >= 0 ? '+' : ''}{((item.upnl / (item.totalInvestment || 1)) * 100).toFixed(2)}%)
+                  </span>
                 </div>
               </div>
             </div>

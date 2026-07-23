@@ -69,6 +69,8 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
   const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(val);
   
   const totalRealisedPnl = exits.reduce((sum, item) => sum + (item.realizedPnl || 0), 0);
+  const totalInvestment = exits.reduce((sum, item) => sum + (item.estimatedTotal || 0), 0);
+  const totalPnlPct = totalInvestment ? (totalRealisedPnl / totalInvestment) * 100 : 0;
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 relative">
@@ -87,7 +89,7 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
               <div className="flex items-center gap-2">
                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${totalRealisedPnl >= 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
                   <span className="material-symbols-outlined text-[12px]">{totalRealisedPnl >= 0 ? 'trending_up' : 'trending_down'}</span>
-                  {totalRealisedPnl >= 0 ? '+' : ''}{formatCurrency(totalRealisedPnl)}
+                  {totalRealisedPnl >= 0 ? '+' : ''}{formatCurrency(totalRealisedPnl)} ({totalRealisedPnl >= 0 ? '+' : ''}{totalPnlPct.toFixed(2)}%)
                 </span>
                 <span className="text-xs text-slate-500 font-medium ml-2">{exits.length} Trades</span>
               </div>
@@ -246,6 +248,9 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
                 <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">TOTAL P/L</div>
                 <div className={`font-mono text-xs font-bold ${item.realizedPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {item.realizedPnl >= 0 ? '+' : ''}{formatCurrency(item.realizedPnl || 0)}
+                  <span className="text-[10px] ml-1 font-semibold opacity-95">
+                    ({item.realizedPnl >= 0 ? '+' : ''}{(((item.realizedPnl || 0) / (item.estimatedTotal || 1)) * 100).toFixed(2)}%)
+                  </span>
                 </div>
               </div>
             </div>

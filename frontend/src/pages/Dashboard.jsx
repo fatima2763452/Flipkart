@@ -275,7 +275,7 @@ const Dashboard = () => {
         </div>
         <div className="flex gap-3 items-center">
           <button onClick={() => navigate('/recycle-bin')} className="bg-rose-600/20 text-rose-400 border border-rose-500/30 hover:bg-rose-600/30 px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
-            <span className="material-symbols-outlined text-[18px]">delete</span> Bin
+            <span className="material-symbols-outlined text-[18px]">delete</span> 
           </button>
           <button onClick={() => setIsAvgCalcOpen(true)} className="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors" title="Average Calculator">
             <span className="material-symbols-outlined text-[18px]">calculate</span> Calc

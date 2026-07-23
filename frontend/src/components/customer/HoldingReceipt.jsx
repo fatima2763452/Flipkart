@@ -57,7 +57,12 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const d = new Date(dateStr);
-    return d.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' });
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  };
+  const getPnlPercent = (pnl, invested) => {
+    if (!invested) return '0.00%';
+    const pct = (pnl / invested) * 100;
+    return `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`;
   };
 
   const handleDownload = async () => {
@@ -262,6 +267,9 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                     <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Unrealised P&L</span>
                     <span className={`text-sm font-bold ${displayUnrealisedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                       {(displayUnrealisedPnl >= 0 ? '+' : '')}{formatCurrency(displayUnrealisedPnl)}
+                      <span className="text-xs ml-1.5 font-semibold">
+                        ({getPnlPercent(displayUnrealisedPnl, displayInvested)})
+                      </span>
                     </span>
                   </div>
                 )}
@@ -280,6 +288,9 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                   }`}>TOTAL P/L</span>
                 <span className={`text-xl font-black tracking-tight ${displayTotalPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                   {displayTotalPnl >= 0 ? '+' : ''}{formatCurrency(displayTotalPnl)}
+                  <span className="text-sm ml-2 font-bold">
+                    ({getPnlPercent(displayTotalPnl, displayInvested)})
+                  </span>
                 </span>
               </div>
             )}

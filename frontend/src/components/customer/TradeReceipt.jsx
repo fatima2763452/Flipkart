@@ -49,7 +49,12 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const d = new Date(dateStr);
-    return d.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' });
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  };
+  const getPnlPercent = (pnl, invested) => {
+    if (!invested) return '0.00%';
+    const pct = (pnl / invested) * 100;
+    return `${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%`;
   };
 
   const handleDownload = async () => {
@@ -117,6 +122,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
   const totalBuyValue = buyPrice !== null ? buyPrice * trade.quantity : null;
   const totalSellValue = sellPrice !== null ? sellPrice * trade.quantity : null;
   const isShortExit = trade.action.toLowerCase() === 'buy'; // Exiting a short position by buying
+  const investedAmount = (isExit ? trade.price : (trade.entryPrice || 0)) * trade.quantity;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center  bg-slate-950/90 backdrop-blur-sm animate-in fade-in duration-300 overflow-y-auto">
@@ -322,6 +328,9 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                     <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Realised P&L</span>
                     <span className={`text-sm font-bold ${trade.realizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                       {trade.realizedPnl >= 0 ? '+' : ''}{formatCurrency(trade.realizedPnl)}
+                      <span className="text-xs ml-1.5 font-semibold">
+                        ({getPnlPercent(trade.realizedPnl, investedAmount)})
+                      </span>
                     </span>
                   </div>
                 )}
@@ -342,6 +351,9 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                 }`}>TOTAL P/L</span>
                 <span className={`text-xl font-black tracking-tight ${trade.realizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                   {trade.realizedPnl >= 0 ? '+' : ''}{formatCurrency(trade.realizedPnl)}
+                  <span className="text-sm ml-2 font-bold">
+                    ({getPnlPercent(trade.realizedPnl, investedAmount)})
+                  </span>
                 </span>
               </div>
             )}

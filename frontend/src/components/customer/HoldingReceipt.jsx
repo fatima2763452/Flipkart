@@ -57,7 +57,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const d = new Date(dateStr);
-    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric', timeZone: 'UTC' });
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
   };
   const getPnlPercent = (pnl, invested) => {
     if (!invested) return '0.00%';
@@ -143,7 +143,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
 
                 <div>
                   <h1 className={`text-xl font-black tracking-tight leading-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                    RADHE BROCKRAGE PVT. LTD.
+                    RADHE BROKERAGE PVT. LTD.
                   </h1>
                   <h2 className={`text-xs font-semibold tracking-widest uppercase ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                     entry
@@ -255,7 +255,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                   )}
                 </div>
                 <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
-                  <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Brockerage</span>
+                  <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Brokerage</span>
                   {isEditing ? (
                     <input type="number" className="w-24 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.brokerageFee} onChange={e => setEditData({ ...editData, brokerageFee: e.target.value })} />
                   ) : (
@@ -299,7 +299,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
             <div className="mt-3 mb-1 flex flex-col items-center justify-center">
 
               <div className={`text-[10px] font-bold tracking-widest ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`}>
-                © RADHE BROCKRAGE PVT. LTD.
+                © RADHE BROKERAGE PVT. LTD.
               </div>
             </div>
 

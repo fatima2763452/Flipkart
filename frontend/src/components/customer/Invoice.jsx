@@ -509,7 +509,7 @@ export default function Invoice() {
             pdf.setFont(activeFont, 'bold');
             pdf.setFontSize(10);
             pdf.setTextColor(148, 163, 184); // Slate 400
-            pdf.text('RADHE BROCKRAGE PVT. LTD.', pageW / 2, cursorY, { align: 'center' });
+            pdf.text('RADHE BROKERAGE PVT. LTD.', pageW / 2, cursorY, { align: 'center' });
 
             // File Name Safe Formatting
             const safeClientName = (clientName || 'Statement').replace(/[^a-zA-Z0-9]/g, '_');
@@ -756,7 +756,7 @@ export default function Invoice() {
                    
                     
                     <div className="text-center text-[10px] text-slate-400 mt-2 font-bold tracking-widest uppercase">
-                        RADHE BROCKRAGE PVT. LTD.
+                        RADHE BROKERAGE PVT. LTD.
                     </div>
                 </div>
 

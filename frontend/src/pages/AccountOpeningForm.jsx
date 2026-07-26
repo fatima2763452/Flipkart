@@ -318,7 +318,7 @@ const AccountOpeningForm = () => {
                 textTransform: "uppercase"
               }}
             >
-              RADHE BROCKRAGE PVT. LTD.
+              RADHE BROKERAGE PVT. LTD.
             </div>
           </div>
         </div>

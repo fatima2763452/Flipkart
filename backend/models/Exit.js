@@ -64,6 +64,11 @@ const exitSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  tradeCategory: {
+    type: String,
+    enum: ['normal', 'delivery', 'intraday'],
+    default: 'normal',
+  },
   realizedPnl: {
     type: Number,
     default: 0,

@@ -33,6 +33,7 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
   const [marginPct, setMarginPct] = useState('');
   const [date, setDate] = useState(getTodayDateValue());
   const [brokerage, setBrokerage] = useState('');
+  const [tradeCategory, setTradeCategory] = useState('normal'); // 'normal' or 'delivery'
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
   const [editingId, setEditingId] = useState(null);
@@ -62,6 +63,7 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
             : ''
         );
       }
+      setTradeCategory(editingTradeData.tradeCategory || 'normal');
     }
   }, [editingTradeData]);
 
@@ -101,7 +103,8 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
         marginPct: parseFloat(marginPct) || 0,
         date: date || getTodayDateValue(),
         brokerageType: brokerageType,
-        brokerageValue: brokerageValue
+        brokerageValue: brokerageValue,
+        tradeCategory: tradeCategory
       };
 
       let savedData;
@@ -127,6 +130,7 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
       setMarginPct('');
       setDate(getTodayDateValue());
       setBrokerage('');
+      setTradeCategory('normal');
     } catch (err) {
       console.error(err);
       showToast(err.response?.data?.message || 'Server error. Did you restart the backend?', 'error');
@@ -158,6 +162,7 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
             : ''
         );
       }
+      setTradeCategory(receiptData.tradeCategory || 'normal');
       setReceiptData(null);
     }
   };
@@ -175,6 +180,7 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
     setMarginPct('');
     setDate(getTodayDateValue());
     setBrokerage('');
+    setTradeCategory('normal');
   };
 
   return (
@@ -233,6 +239,37 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
           >
             <span className="material-symbols-outlined text-[20px]">do_not_disturb_on</span>
             SELL
+          </button>
+        </div>
+      </div>
+
+      {/* Trade Category Toggle */}
+      <div className="mb-5">
+        <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Category</label>
+        <div className="flex gap-3">
+          <button 
+            type="button"
+            onClick={() => setTradeCategory('normal')}
+            className={`flex-1 flex justify-center items-center gap-2 py-3 rounded-lg font-bold text-sm transition-all ${
+              tradeCategory === 'normal' 
+                ? 'bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.3)] border border-blue-400' 
+                : 'bg-slate-950 text-slate-400 border border-slate-800 hover:bg-slate-800'
+            }`}
+          >
+           
+            NORMAL
+          </button>
+          <button 
+            type="button"
+            onClick={() => setTradeCategory('delivery')}
+            className={`flex-1 flex justify-center items-center gap-2 py-3 rounded-lg font-bold text-sm transition-all ${
+              tradeCategory === 'delivery' 
+                ? 'bg-amber-500 text-white shadow-[0_0_15px_rgba(245,158,11,0.3)] border border-amber-400' 
+                : 'bg-slate-950 text-slate-400 border border-slate-800 hover:bg-slate-800'
+            }`}
+          >
+           
+            DELIVERY
           </button>
         </div>
       </div>

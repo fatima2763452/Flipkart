@@ -22,7 +22,8 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
         brokerageType: trade.brokerageType || 'percentage',
         brokerageValue: trade.brokerageType === 'rupees' 
           ? (trade.brokerageValue || '').toString() 
-          : (trade.brokeragePct && trade.brokeragePct !== 0.01 ? trade.brokeragePct.toString() : '')
+          : (trade.brokeragePct && trade.brokeragePct !== 0.01 ? trade.brokeragePct.toString() : ''),
+        tradeCategory: trade.tradeCategory || 'normal'
       });
     }
   }, [trade, isEditing, type]);
@@ -225,8 +226,10 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
 
             {/* Trade Details Table */}
             <div className={`rounded-xl border overflow-hidden ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-              <div className="bg-blue-600 px-4 py-2">
-                <h4 className="text-white text-xs font-bold tracking-wider uppercase">DETAILS</h4>
+              <div className="bg-blue-600 px-4 py-2 text-center">
+                <h4 className="text-white text-xs font-bold tracking-wider uppercase">
+                  {(trade.tradeCategory || 'normal').toUpperCase()}
+                </h4>
               </div>
               <div className="px-3 py-3 space-y-3">
                 {!isEditing && (

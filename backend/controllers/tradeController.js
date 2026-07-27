@@ -15,7 +15,7 @@ const normalizeTradeDate = (value) => {
 
 const createTrade = async (req, res) => {
   try {
-    const { customerId, type, action, symbol, quantity, lot, price, ltp, marginRs, marginPct, date, brokeragePct, brokerageType, brokerageValue } = req.body;
+    const { customerId, type, action, symbol, quantity, lot, price, ltp, marginRs, marginPct, date, brokeragePct, brokerageType, brokerageValue, tradeCategory } = req.body;
 
     if (!customerId || !type || !action || !symbol || !quantity || !price || !ltp || !date) {
       return res.status(400).json({ message: 'Please provide all required fields' });
@@ -56,7 +56,8 @@ const createTrade = async (req, res) => {
       brokerageValue: activeBrokerageType === 'rupees' ? (isNaN(activeBrokerageValue) ? 0 : activeBrokerageValue) : activeBrokeragePct,
       brokeragePct: activeBrokeragePct,
       brokerageFee,
-      estimatedTotal
+      estimatedTotal,
+      tradeCategory: tradeCategory || 'normal'
     };
 
     let savedTrade;
@@ -130,6 +131,7 @@ const getCustomerHoldings = async (req, res) => {
       const holding = holdingsMap[trade.symbol];
       holding.lastPrice = trade.ltp || trade.price; // Fallback to price for older trades
       if (trade.lot) holding.lot = trade.lot;
+      if (trade.tradeCategory) holding.tradeCategory = trade.tradeCategory;
       if (trade.customInvested !== undefined) holding.customInvested = trade.customInvested;
       if (trade.customUpnl !== undefined) holding.customUpnl = trade.customUpnl;
       if (trade.customTotalPnl !== undefined) holding.customTotalPnl = trade.customTotalPnl;
@@ -196,7 +198,8 @@ const getCustomerHoldings = async (req, res) => {
         upnl: h.customUpnl !== undefined ? h.customUpnl : upnl,
         totalPnl: h.customTotalPnl !== undefined ? h.customTotalPnl : upnl,
         lastUpdated: h.lastUpdated,
-        date: h.date
+        date: h.date,
+        tradeCategory: h.tradeCategory || 'normal'
       };
     })
     .filter(h => h.type !== 'Closed') // Filter out fully exited positions
@@ -312,7 +315,7 @@ const deleteExit = async (req, res) => {
 const editTrade = async (req, res) => {
   try {
     const { id } = req.params;
-    const { type, action, symbol, quantity, lot, price, ltp, marginRs, marginPct, date, brokeragePct, brokerageType, brokerageValue } = req.body;
+    const { type, action, symbol, quantity, lot, price, ltp, marginRs, marginPct, date, brokeragePct, brokerageType, brokerageValue, tradeCategory } = req.body;
 
     if (!id || !type || !action || !symbol || !quantity || !price || !ltp || !date) {
       return res.status(400).json({ message: 'Please provide all required fields' });
@@ -352,7 +355,8 @@ const editTrade = async (req, res) => {
       brokerageValue: activeBrokerageType === 'rupees' ? (isNaN(activeBrokerageValue) ? 0 : activeBrokerageValue) : activeBrokeragePct,
       brokeragePct: activeBrokeragePct,
       brokerageFee,
-      estimatedTotal
+      estimatedTotal,
+      tradeCategory: tradeCategory || 'normal'
     };
 
     let updatedTrade;

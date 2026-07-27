@@ -19,7 +19,8 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
         price: holding.avgCost || 0,
         ltp: holding.lastPrice || 0,
         marginRs: holding.totalMargin || 0,
-        brokerageFee: holding.totalBrokerage || 0
+        brokerageFee: holding.totalBrokerage || 0,
+        tradeCategory: holding.tradeCategory || 'normal'
       });
     }
   }, [holding, isEditing]);
@@ -203,8 +204,10 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
 
             {/* Holding Details Table */}
             <div className={`rounded-xl border overflow-hidden ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-              <div className="bg-blue-600 px-4 py-2">
-                <h4 className="text-white text-xs font-bold tracking-wider uppercase">DETAILS</h4>
+              <div className="bg-blue-600 px-4 py-2 text-center">
+                <h4 className="text-white text-xs font-bold tracking-wider uppercase">
+                  {(holding.tradeCategory || 'normal').toUpperCase()}
+                </h4>
               </div>
               <div className="px-3  py-3 space-y-3">
                 {!isEditing && (

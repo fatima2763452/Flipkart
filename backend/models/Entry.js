@@ -64,6 +64,11 @@ const entrySchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  tradeCategory: {
+    type: String,
+    enum: ['normal', 'delivery', 'intraday'],
+    default: 'normal',
+  },
   customInvested: {
     type: Number
   },

@@ -226,7 +226,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
 
             {/* Trade Details Table */}
             <div className={`rounded-xl border overflow-hidden ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-              <div className="bg-blue-600 px-4 py-4 text-center">
+              <div className="bg-blue-600 px-4 py-3 text-center">
                 <h4 className="text-white text-lg font-bold tracking-wider uppercase">
                   {(trade.tradeCategory || 'normal').toUpperCase()}
                 </h4>

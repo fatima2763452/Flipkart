@@ -163,9 +163,9 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                 
                 <div>
                   <h1 className={`text-xl font-black tracking-tight leading-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                    RADHE BROKERAGE PVT. LTD.
+                    
                   </h1>
-                  <h2 className={`text-xs font-semibold tracking-widest uppercase ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+                  <h2 className={`text-xl font-semibold tracking-widest uppercase ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                     {type.toUpperCase()}
                   </h2>
                 </div>
@@ -226,7 +226,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
 
             {/* Trade Details Table */}
             <div className={`rounded-xl border overflow-hidden ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-              <div className="bg-blue-600 px-4 py-3 text-center">
+              <div className="bg-blue-600 px-4 py-1.5 text-center">
                 <h4 className="text-white text-lg font-bold tracking-wider uppercase">
                   {(trade.tradeCategory || 'normal').toUpperCase()}
                 </h4>
@@ -352,9 +352,9 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                     ? (theme === 'dark' ? 'text-emerald-400/80' : 'text-emerald-700/80')
                     : (theme === 'dark' ? 'text-rose-400/80' : 'text-rose-700/80')
                 }`}>TOTAL P/L</span>
-                <span className={`text-xl font-black tracking-tight ${trade.realizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                <span className={`text-m font-black tracking-tight ${trade.realizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                   {trade.realizedPnl >= 0 ? '+' : ''}{formatCurrency(trade.realizedPnl)}
-                  <span className="text-sm ml-2 font-bold">
+                  <span className="text-s ml-2 font-bold">
                     ({getPnlPercent(trade.realizedPnl, investedAmount)})
                   </span>
                 </span>
@@ -364,7 +364,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
             <div className="mt-3 mb-1 flex flex-col items-center justify-center">
              
               <div className={`text-[10px] font-bold tracking-widest ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`}>
-                © RADHE BROKERAGE PVT. LTD.
+               
               </div>
             </div>
 

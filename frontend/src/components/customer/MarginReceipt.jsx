@@ -110,7 +110,7 @@ export default function MarginReceipt() {
     const [clientCode, setClientCode] = useState('');
     const [mobileNumber, setMobileNumber] = useState('');
     const [stockName, setStockName] = useState('');
-    const [exchange, setExchange] = useState('NSE / BSE');
+    const [exchange, setExchange] = useState('Future');
     const [quantity, setQuantity] = useState('');
     const [marginAmount, setMarginAmount] = useState('');
     const [paymentMode, setPaymentMode] = useState('UPI');
@@ -260,7 +260,8 @@ export default function MarginReceipt() {
             pdf.text(clientName, 130, clientCardY + 16);
             pdf.text(clientCode, 130, clientCardY + 30);
             pdf.setFont(activeFont, 'normal');
-            pdf.text(mobileNumber || 'N/A', 130, clientCardY + 44);
+            const displayMobile = mobileNumber ? `XXXXXX${mobileNumber}` : 'N/A';
+            pdf.text(displayMobile, 130, clientCardY + 44);
 
             cursorY = clientCardY + clientCardH + 15;
 
@@ -288,7 +289,7 @@ export default function MarginReceipt() {
             pdf.setTextColor(100, 116, 139);
             pdf.setFont(activeFont, 'normal');
             pdf.text("Stock Name", 50, gridY + 13);
-            pdf.text("Exchange", 50, gridY + 33);
+            pdf.text("Segment", 50, gridY + 33);
             pdf.text("Quantity", 50, gridY + 53);
             pdf.text("Margin Amount Received", 50, gridY + 73);
             pdf.text("Payment Mode", 50, gridY + 93);
@@ -449,12 +450,18 @@ export default function MarginReceipt() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Mobile Number</label>
+                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Mobile Number (Last 4 Digits)</label>
                                         <input
                                             type="text"
+                                            maxLength={4}
                                             value={mobileNumber}
-                                            onChange={(e) => setMobileNumber(e.target.value)}
-                                            placeholder="e.g. +91 99999 88888"
+                                            onChange={(e) => {
+                                                const val = e.target.value.replace(/\D/g, '');
+                                                if (val.length <= 4) {
+                                                    setMobileNumber(val);
+                                                }
+                                            }}
+                                            placeholder="e.g. 8888"
                                             className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm"
                                         />
                                     </div>
@@ -477,15 +484,15 @@ export default function MarginReceipt() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Exchange</label>
+                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Segment</label>
                                         <select
                                             value={exchange}
                                             onChange={(e) => setExchange(e.target.value)}
                                             className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm"
                                         >
-                                            <option value="NSE / BSE">NSE / BSE</option>
-                                            <option value="NSE">NSE</option>
-                                            <option value="BSE">BSE</option>
+                                            <option value="Future">Future</option>
+                                            <option value="Option">Option</option>
+                                            <option value="Equity">Equity</option>
                                             <option value="MCX">MCX</option>
                                         </select>
                                     </div>
@@ -626,7 +633,7 @@ export default function MarginReceipt() {
                                 <div className="flex">
                                     <span className="w-28 text-slate-400">Mobile No.</span>
                                     <span className="mr-2">:</span>
-                                    <span className="text-slate-900">{mobileNumber || 'N/A'}</span>
+                                    <span className="text-slate-900">{mobileNumber ? `XXXXXX${mobileNumber}` : 'N/A'}</span>
                                 </div>
                             </div>
                         </div>

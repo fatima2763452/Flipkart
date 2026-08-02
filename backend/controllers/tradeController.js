@@ -68,9 +68,9 @@ const createTrade = async (req, res) => {
       // Calculate Realized PNL directly from the form since entries/exits are decoupled
       // In Exit Form: 'price' is Entry Price, 'ltp' is Exit Price
       let realizedPnl = 0;
-      if (action.toLowerCase() === 'buy') { // Exiting a Long position
+      if (action.toLowerCase() === 'buy') { // Exiting a Long position (originally bought)
         realizedPnl = (parseFloat(ltp) - priceNum) * qtyNum;
-      } else if (action.toLowerCase() === 'sell') { // Exiting a Short position
+      } else if (action.toLowerCase() === 'sell') { // Exiting a Short position (originally sold)
         realizedPnl = (priceNum - parseFloat(ltp)) * qtyNum;
       }
       
@@ -285,6 +285,27 @@ const editHolding = async (req, res) => {
       }
     }
 
+    // Recalculate custom overrides if they exist in the entry so they do not remain stale
+    if (latestEntry.customInvested !== undefined && latestEntry.customInvested !== null) {
+      latestEntry.customInvested = latestEntry.quantity * latestEntry.price;
+    }
+    
+    const activeAction = (latestEntry.action || 'buy').toLowerCase();
+    let calculatedUpnl = 0;
+    if (activeAction === 'buy') {
+      calculatedUpnl = (latestEntry.ltp - latestEntry.price) * latestEntry.quantity;
+    } else {
+      calculatedUpnl = (latestEntry.price - latestEntry.ltp) * latestEntry.quantity;
+    }
+    calculatedUpnl -= latestEntry.brokerageFee;
+    
+    if (latestEntry.customUpnl !== undefined && latestEntry.customUpnl !== null) {
+      latestEntry.customUpnl = calculatedUpnl;
+    }
+    if (latestEntry.customTotalPnl !== undefined && latestEntry.customTotalPnl !== null) {
+      latestEntry.customTotalPnl = calculatedUpnl;
+    }
+
     await latestEntry.save();
     
     // If there are exits for this holding, we might need to update their entry prices? 
@@ -364,9 +385,9 @@ const editTrade = async (req, res) => {
       updatedTrade = await Entry.findByIdAndUpdate(id, tradeData, { new: true });
     } else if (type === 'exit') {
         let realizedPnl = 0;
-        if (action.toLowerCase() === 'buy') { 
+        if (action.toLowerCase() === 'buy') { // Exiting a Long position (originally bought)
           realizedPnl = (parseFloat(ltp) - priceNum) * qtyNum;
-        } else if (action.toLowerCase() === 'sell') { 
+        } else if (action.toLowerCase() === 'sell') { // Exiting a Short position (originally sold)
           realizedPnl = (priceNum - parseFloat(ltp)) * qtyNum;
         }
       realizedPnl -= brokerageFee;

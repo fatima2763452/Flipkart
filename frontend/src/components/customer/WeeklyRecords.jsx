@@ -68,7 +68,24 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
 
   const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(val);
   
-  const totalRealisedPnl = exits.reduce((sum, item) => sum + (item.realizedPnl || 0), 0);
+  const getCalculatedRealizedPnl = (item) => {
+    if (!item) return 0;
+    const qty = item.quantity || 0;
+    const entryPrice = item.price || 0;
+    const exitPrice = item.ltp || 0;
+    const brokerage = item.brokerageFee || 0;
+    const action = (item.action || 'buy').toLowerCase();
+    
+    let grossPnl = 0;
+    if (action === 'buy') { // Exiting a Long position (originally bought)
+      grossPnl = (exitPrice - entryPrice) * qty;
+    } else { // Exiting a Short position (originally sold)
+      grossPnl = (entryPrice - exitPrice) * qty;
+    }
+    return grossPnl - brokerage;
+  };
+
+  const totalRealisedPnl = exits.reduce((sum, item) => sum + getCalculatedRealizedPnl(item), 0);
   const totalInvestment = exits.reduce((sum, item) => sum + (item.estimatedTotal || 0), 0);
   const totalPnlPct = totalInvestment ? (totalRealisedPnl / totalInvestment) * 100 : 0;
 
@@ -255,10 +272,10 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
               </div>
               <div className="text-right">
                 <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">TOTAL P/L</div>
-                <div className={`font-mono text-xs font-bold ${item.realizedPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                  {item.realizedPnl >= 0 ? '+' : ''}{formatCurrency(item.realizedPnl || 0)}
+                <div className={`font-mono text-xs font-bold ${getCalculatedRealizedPnl(item) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  {getCalculatedRealizedPnl(item) >= 0 ? '+' : ''}{formatCurrency(getCalculatedRealizedPnl(item))}
                   <span className="text-[10px] ml-1 font-semibold opacity-95">
-                    ({item.realizedPnl >= 0 ? '+' : ''}{(((item.realizedPnl || 0) / (item.estimatedTotal || 1)) * 100).toFixed(2)}%)
+                    ({getCalculatedRealizedPnl(item) >= 0 ? '+' : ''}{(((getCalculatedRealizedPnl(item)) / (item.estimatedTotal || 1)) * 100).toFixed(2)}%)
                   </span>
                 </div>
               </div>

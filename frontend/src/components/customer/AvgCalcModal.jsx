@@ -90,6 +90,16 @@ const AvgCalcModal = ({ isOpen, onClose }) => {
               className="flex-1 min-w-0 bg-slate-950 border border-slate-800 rounded-xl px-3 py-5 text-2xl font-bold font-mono text-white focus:border-blue-500 focus:outline-none transition-colors"
               placeholder="0.00"
             />
+            {entries.length > 1 && (
+              <button 
+                type="button"
+                onClick={() => handleRemoveEntry(index)}
+                className="text-slate-500 hover:text-rose-400 p-3 rounded-xl hover:bg-slate-900 transition-colors flex items-center justify-center cursor-pointer border border-transparent hover:border-slate-800"
+                title="Remove Entry"
+              >
+                <span className="material-symbols-outlined text-[28px]">delete</span>
+              </button>
+            )}
           </div>
         ))}
         

@@ -31,10 +31,17 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
   const displayMargin = isEditing ? (parseFloat(editData.marginRs) || 0) : (holding.totalMargin || 0);
   const displayBrokerage = isEditing ? (parseFloat(editData.brokerageFee) || 0) : (holding.totalBrokerage || 0);
 
-  const displayInvested = holding.customInvested !== undefined ? holding.customInvested : holding.totalInvestment;
-  const displayUnrealisedPnl = holding.customUpnl !== undefined ? holding.customUpnl : holding.upnl + (holding.totalBrokerage || 0);
-  const displayTotalPnl = holding.customTotalPnl !== undefined ? holding.customTotalPnl : holding.totalPnl || holding.upnl;
   const isBuy = holding.type.toLowerCase() === 'buy';
+  const grossPnl = isBuy
+    ? (displayLtp - displayPrice) * displayQty
+    : (displayPrice - displayLtp) * displayQty;
+  const calculatedUpnl = grossPnl - displayBrokerage;
+
+  const originalTotalPnl = holding.customTotalPnl !== undefined ? holding.customTotalPnl : (isEditing ? calculatedUpnl : (holding.totalPnl || holding.upnl || 0));
+
+  const displayInvested = holding.customInvested !== undefined ? holding.customInvested : (isEditing ? (displayQty * displayPrice) : (holding.totalInvestment || (displayQty * displayPrice)));
+  const displayTotalPnl = originalTotalPnl;
+  const displayUnrealisedPnl = holding.customUpnl !== undefined ? holding.customUpnl : (originalTotalPnl - displayBrokerage);
 
   const handleSave = async () => {
     if (onEdit) {

@@ -125,6 +125,34 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
   const isShortExit = trade.action.toLowerCase() === 'buy'; // Exiting a short position by buying
   const investedAmount = (isExit ? trade.price : (trade.entryPrice || 0)) * trade.quantity;
 
+  const displayGrossPnl = (() => {
+    if (!isExit) return undefined;
+    const qty = trade.quantity || 0;
+    const entryPrice = trade.price || 0;
+    const exitPrice = trade.ltp || 0;
+    const action = (trade.action || 'buy').toLowerCase();
+    
+    let grossPnl = 0;
+    if (action === 'buy') { // Exiting a Long position (originally bought)
+      grossPnl = (exitPrice - entryPrice) * qty;
+    } else { // Exiting a Short position (originally sold)
+      grossPnl = (entryPrice - exitPrice) * qty;
+    }
+    return grossPnl;
+  })();
+
+  const originalRealizedPnl = (() => {
+    if (displayGrossPnl === undefined) return undefined;
+    const brokerage = trade.brokerageFee || 0;
+    return displayGrossPnl - brokerage;
+  })();
+
+  const displayRealizedPnl = (() => {
+    if (originalRealizedPnl === undefined) return undefined;
+    const brokerage = trade.brokerageFee || 0;
+    return originalRealizedPnl - brokerage;
+  })();
+
   return (
     <div className="fixed inset-0 z-[100] flex items-start justify-center  bg-slate-950/90 backdrop-blur-sm animate-in fade-in duration-300 overflow-y-auto">
       {/* Background clickable area to close */}
@@ -205,14 +233,14 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
               </div>
               <div className={`p-2 rounded-xl border flex flex-col items-center justify-center text-center ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <div className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
-                  CUSTOMER ID
+                  Name
                 </div>
                 <div className={`font-bold text-sm leading-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                   {customer.name?.split(' ')[0] || 'User'}
                 </div>
-                <div className={`text-[10px] mt-0.5 font-mono ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+                {/* <div className={`text-[10px] mt-0.5 font-mono ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                   @{customer.id}
-                </div>
+                </div> */}
               </div>
               <div className={`p-2 rounded-xl border flex flex-col items-center justify-center text-center ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <div className={`text-[10px] font-bold uppercase tracking-wider mb-2 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -326,13 +354,13 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                   </div>
                 )}
 
-                {!isEditing && trade.realizedPnl !== undefined && (
+                {!isEditing && displayRealizedPnl !== undefined && (
                   <div className="flex justify-between items-center pt-1">
                     <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Realised P&L</span>
-                    <span className={`text-sm font-bold ${trade.realizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                      {trade.realizedPnl >= 0 ? '+' : ''}{formatCurrency(trade.realizedPnl)}
+                    <span className={`text-sm font-bold ${displayRealizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                      {displayRealizedPnl >= 0 ? '+' : ''}{formatCurrency(displayRealizedPnl)}
                       <span className="text-xs ml-1.5 font-semibold">
-                        ({getPnlPercent(trade.realizedPnl, investedAmount)})
+                        ({getPnlPercent(displayRealizedPnl, investedAmount)})
                       </span>
                     </span>
                   </div>
@@ -341,21 +369,21 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
             </div>
 
             {/* Total P&L Footer */}
-            {!isEditing && trade.realizedPnl !== undefined && (
+            {!isEditing && originalRealizedPnl !== undefined && (
               <div className={`mt-4 p-4 rounded-xl border flex justify-between items-center ${
-                trade.realizedPnl >= 0 
+                originalRealizedPnl >= 0 
                   ? (theme === 'dark' ? 'bg-emerald-950/30 border-emerald-900/50' : 'bg-emerald-50 border-emerald-200')
                   : (theme === 'dark' ? 'bg-rose-950/30 border-rose-900/50' : 'bg-rose-50 border-rose-200')
               }`}>
                 <span className={`text-xs font-bold uppercase tracking-wider ${
-                  trade.realizedPnl >= 0 
+                  originalRealizedPnl >= 0 
                     ? (theme === 'dark' ? 'text-emerald-400/80' : 'text-emerald-700/80')
                     : (theme === 'dark' ? 'text-rose-400/80' : 'text-rose-700/80')
                 }`}>TOTAL P/L</span>
-                <span className={`text-m font-black tracking-tight ${trade.realizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                  {trade.realizedPnl >= 0 ? '+' : ''}{formatCurrency(trade.realizedPnl)}
+                <span className={`text-m font-black tracking-tight ${originalRealizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                  {originalRealizedPnl >= 0 ? '+' : ''}{formatCurrency(originalRealizedPnl)}
                   <span className="text-s ml-2 font-bold">
-                    ({getPnlPercent(trade.realizedPnl, investedAmount)})
+                    ({getPnlPercent(originalRealizedPnl, investedAmount)})
                   </span>
                 </span>
               </div>

@@ -109,6 +109,14 @@ input:-webkit-autofill:active{
     scrollbar-width: none;
 }
 
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+
 /* --- Print Styles for PDF Generation --- */
 @media print {
   /* Hide absolutely everything initially */

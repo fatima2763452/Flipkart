@@ -64,7 +64,7 @@ const getDeletedCustomers = async (req, res) => {
 const softDeleteCustomer = async (req, res) => {
   try {
     const { id } = req.params;
-    const customer = await Customer.findByIdAndUpdate(id, { isDeleted: true }, { new: true });
+    const customer = await Customer.findByIdAndUpdate(id, { isDeleted: true }, { returnDocument: 'after' });
     if (!customer) {
       return res.status(404).json({ message: 'Customer not found' });
     }
@@ -78,7 +78,7 @@ const softDeleteCustomer = async (req, res) => {
 const restoreCustomer = async (req, res) => {
   try {
     const { id } = req.params;
-    const customer = await Customer.findByIdAndUpdate(id, { isDeleted: false }, { new: true });
+    const customer = await Customer.findByIdAndUpdate(id, { isDeleted: false }, { returnDocument: 'after' });
     if (!customer) {
       return res.status(404).json({ message: 'Customer not found' });
     }

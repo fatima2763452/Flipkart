@@ -251,13 +251,12 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
             type="button"
             onClick={() => setTradeCategory('normal')}
             className={`flex-1 flex justify-center items-center gap-2 py-3 rounded-lg font-bold text-sm transition-all ${
-              tradeCategory === 'normal' 
-                ? 'bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.3)] border border-blue-400' 
+              (tradeCategory === 'normal' || tradeCategory === 'intraday')
+                ? 'bg-cyan-600 text-white shadow-[0_0_15px_rgba(6,182,212,0.3)] border border-cyan-400' 
                 : 'bg-slate-950 text-slate-400 border border-slate-800 hover:bg-slate-800'
             }`}
           >
-           
-            NORMAL
+            INTRADAY
           </button>
           <button 
             type="button"
@@ -268,7 +267,6 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
                 : 'bg-slate-950 text-slate-400 border border-slate-800 hover:bg-slate-800'
             }`}
           >
-           
             DELIVERY
           </button>
         </div>

@@ -247,7 +247,7 @@ const deleteHolding = async (req, res) => {
 const editHolding = async (req, res) => {
   try {
     const { customerId, symbol } = req.params;
-    const { quantity, lot, price, ltp, marginRs, brokerageFee, invested, unrealisedPnl, totalPnl } = req.body;
+    const { quantity, lot, price, ltp, marginRs, brokerageFee, invested, unrealisedPnl, totalPnl, tradeCategory } = req.body;
     
     // Find the most recent entry for this holding
     const entries = await Entry.find({ customerId, symbol: symbol.toUpperCase() }).sort({ date: -1 });
@@ -263,6 +263,7 @@ const editHolding = async (req, res) => {
     if (price !== undefined) latestEntry.price = parseFloat(price) || 0;
     if (ltp !== undefined) latestEntry.ltp = parseFloat(ltp) || 0;
     if (marginRs !== undefined) latestEntry.marginRs = parseFloat(marginRs) || 0;
+    if (tradeCategory !== undefined) latestEntry.tradeCategory = tradeCategory;
     
     // Custom overrides for display
     if (invested !== undefined) latestEntry.customInvested = parseFloat(invested) || 0;
@@ -382,7 +383,7 @@ const editTrade = async (req, res) => {
 
     let updatedTrade;
     if (type === 'entry') {
-      updatedTrade = await Entry.findByIdAndUpdate(id, tradeData, { new: true });
+      updatedTrade = await Entry.findByIdAndUpdate(id, tradeData, { returnDocument: 'after' });
     } else if (type === 'exit') {
         let realizedPnl = 0;
         if (action.toLowerCase() === 'buy') { // Exiting a Long position (originally bought)
@@ -393,7 +394,7 @@ const editTrade = async (req, res) => {
       realizedPnl -= brokerageFee;
       tradeData.realizedPnl = realizedPnl;
 
-      updatedTrade = await Exit.findByIdAndUpdate(id, tradeData, { new: true });
+      updatedTrade = await Exit.findByIdAndUpdate(id, tradeData, { returnDocument: 'after' });
     } else {
       return res.status(400).json({ message: 'Invalid trade type' });
     }
@@ -410,23 +411,21 @@ const editTrade = async (req, res) => {
 
 const bulkDeleteEntries = async (req, res) => {
   try {
-    const { ids } = req.body;
-    if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      return res.status(400).json({ message: 'No IDs provided for deletion' });
-    }
-    
-    // In holdings we delete by symbol, wait, holdings aren't specific entry IDs.
-    // Holdings are aggregated by symbol. So bulk delete in holdings means deleting all entries/exits for multiple SYMBOLS.
-    // Let's implement bulk delete for symbols.
     const { customerId, symbols } = req.body;
-    if (customerId && symbols && Array.isArray(symbols)) {
+    if (customerId && symbols && Array.isArray(symbols) && symbols.length > 0) {
       const upperSymbols = symbols.map(s => s.toUpperCase());
       await Entry.deleteMany({ customerId, symbol: { $in: upperSymbols } });
       await Exit.deleteMany({ customerId, symbol: { $in: upperSymbols } });
       return res.json({ message: 'Holdings deleted successfully' });
     }
     
-    res.status(400).json({ message: 'Invalid payload for bulk delete' });
+    const { ids } = req.body;
+    if (ids && Array.isArray(ids) && ids.length > 0) {
+      await Entry.deleteMany({ _id: { $in: ids } });
+      return res.json({ message: 'Entries deleted successfully' });
+    }
+    
+    res.status(400).json({ message: 'Invalid payload for bulk delete. Provide symbols or ids.' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

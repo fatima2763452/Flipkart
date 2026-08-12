@@ -60,7 +60,7 @@ const CustomerDetail = () => {
             >
               <span className="material-symbols-outlined text-[16px]">calculate</span>
             </button>
-            <span className="bg-slate-800/80 border border-slate-700/80 rounded px-2 py-0.5 text-[10px] font-mono text-slate-300">ID: {customer.id}</span>
+            <span className="bg-slate-800/80 border border-slate-700/80 rounded px-2.5 py-1 text-[13px] font-bold font-mono text-slate-200">ID: {customer.id}</span>
           </div>
         </div>
       </header>

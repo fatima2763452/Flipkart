@@ -171,7 +171,7 @@ const Holdings = ({ customer, onEditRequest }) => {
                   <div className="w-24 h-3 bg-slate-800 rounded animate-pulse"></div>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-800">
+              <div className="grid grid-cols-[0.7fr_1.2fr_1.7fr] gap-2 pt-3 border-t border-slate-800">
                 <div>
                    <div className="w-8 h-2 bg-slate-800 rounded animate-pulse mb-1"></div>
                    <div className="w-12 h-3 bg-slate-800 rounded animate-pulse"></div>
@@ -216,13 +216,22 @@ const Holdings = ({ customer, onEditRequest }) => {
                   </div>
                 )}
                 <div>
-                  <div className="flex items-center gap-2 mb-0.5">
+                  <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                     <span className="font-bold text-slate-100 text-base">{item.symbol}</span>
                     <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${
                       item.type === 'Buy' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
                     }`}>
                       {item.type}
                     </span>
+                    {item.tradeCategory && (
+                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${
+                        item.tradeCategory === 'delivery' 
+                          ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' 
+                          : 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'
+                      }`}>
+                        {item.tradeCategory === 'delivery' ? 'DELIVERY' : 'INTRADAY'}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -231,7 +240,7 @@ const Holdings = ({ customer, onEditRequest }) => {
                 <div className="text-[10px] text-slate-400">Avg: <span className="text-slate-300">{formatCurrency(item.avgCost)}</span></div>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-800">
+            <div className="grid grid-cols-[0.7fr_1.2fr_1.7fr] gap-2 pt-3 border-t border-slate-800">
               <div>
                 <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">QTY</div>
                 <div className="font-mono text-xs font-semibold text-slate-200">{item.netQty.toLocaleString()}</div>
@@ -244,7 +253,7 @@ const Holdings = ({ customer, onEditRequest }) => {
                 <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">TOTAL P/L</div>
                 <div className={`font-mono text-xs font-bold ${item.upnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {item.upnl >= 0 ? '+' : ''}{formatCurrency(item.upnl)}
-                  <span className="text-[10px] ml-1 font-semibold opacity-95">
+                  <span className="block sm:inline-block sm:ml-1 text-[10px] font-semibold opacity-95">
                     ({item.upnl >= 0 ? '+' : ''}{((item.upnl / (item.totalInvestment || 1)) * 100).toFixed(2)}%)
                   </span>
                 </div>

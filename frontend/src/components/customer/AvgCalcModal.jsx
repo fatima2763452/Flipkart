@@ -6,6 +6,7 @@ const AvgCalcModal = ({ isOpen, onClose }) => {
     { qty: '', price: '' },
     { qty: '', price: '' }
   ]);
+  const [copied, setCopied] = useState(false);
 
   const handleAddEntry = () => {
     setEntries([...entries, { qty: '', price: '' }]);
@@ -27,6 +28,14 @@ const AvgCalcModal = ({ isOpen, onClose }) => {
     const newEntries = [...entries];
     newEntries[index][field] = value;
     setEntries(newEntries);
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(averagePrice);
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
   };
 
   const { totalQty, averagePrice } = useMemo(() => {
@@ -119,14 +128,25 @@ const AvgCalcModal = ({ isOpen, onClose }) => {
         </div>
         
         {/* Bottom totals bar */}
-        <div className="p-4 sm:p-6 border-t border-slate-800/80 bg-slate-950 flex flex-col gap-2 flex-shrink-0 pb-safe">
-          <div className="flex justify-between items-center text-sm">
-            <span className="text-slate-400 font-bold uppercase tracking-wider text-xs">Total Quantity</span>
-            <span className="font-mono text-slate-200 text-base sm:text-lg font-bold">{totalQty}</span>
+        <div className="p-4 sm:p-6 border-t border-slate-800/80 bg-slate-950 flex justify-between items-center flex-shrink-0 pb-safe">
+          <div className="flex flex-col">
+            <span className="text-slate-400 font-bold uppercase tracking-wider text-xs">Total Qty</span>
+            <span className="font-mono text-slate-200 text-lg sm:text-xl font-bold">{totalQty}</span>
           </div>
-          <div className="flex justify-between items-center mt-1 sm:mt-2">
-            <span className="text-slate-400 font-bold uppercase tracking-wider text-xs">Average Price</span>
-            <span className="font-mono text-xl sm:text-2xl font-black text-blue-400">₹{averagePrice}</span>
+          <div className="flex flex-col items-end">
+            <span className="text-slate-400 font-bold uppercase tracking-wider text-xs">Avg Price</span>
+            <div className="flex items-center gap-1.5 sm:gap-2 mt-1">
+              <span className="font-mono text-xl sm:text-2xl font-black text-blue-400">₹{averagePrice}</span>
+              <button 
+                onClick={handleCopy}
+                className="text-slate-400 hover:text-blue-400 p-1 sm:p-1.5 rounded-lg hover:bg-slate-900 transition-all flex items-center justify-center"
+                title="Copy Average Price"
+              >
+                <span className="material-symbols-outlined text-[18px] sm:text-[20px] select-none">
+                  {copied ? 'check' : 'content_copy'}
+                </span>
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -81,13 +81,11 @@ const formatPDFProfitLoss = (n) => {
     return `${sign}${absVal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
-// Helper to format date to DD MMM (e.g. 30 JUN)
+// Helper to format date to match frontend UI (e.g. 12-Aug-2026)
 const formatDDMMM = (dateStr) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
-    const day = date.getUTCDate();
-    const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
-    return `${day} ${months[date.getUTCMonth()]}`;
+    return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
 };
 
 export default function Invoice() {
@@ -325,6 +323,8 @@ export default function Invoice() {
                     exitPrice: formatPDFNumber(item.exitPrice),
                     brokerage: formatPDFNumber(item.totalBrokerage),
                     pl: formatPDFProfitLoss(item.netPnl),
+                    _symbol: symbol,
+                    _dateStr: dateStr,
                     _netPnl: item.netPnl,
                     _type: item.action?.toUpperCase() || 'SELL'
                 };
@@ -357,14 +357,14 @@ export default function Invoice() {
                     lineColor: [241, 245, 249]    // Slate 100
                 },
                 columnStyles: {
-                    idx: { cellWidth: 25, halign: 'center', fontStyle: 'bold' },
+                    idx: { cellWidth: 20, halign: 'center', fontStyle: 'bold' },
                     stock: { cellWidth: 'auto', halign: 'left', fontStyle: 'bold' },
-                    type: { cellWidth: 45, halign: 'center' , fontStyle: 'bold'},
-                    buyPrice: { cellWidth: 80, halign: 'right' , fontStyle: 'bold'},
-                    qty: { cellWidth: 40, halign: 'center' , fontStyle: 'bold'},
-                    exitPrice: { cellWidth: 80, halign: 'right', fontStyle: 'bold' },
-                    brokerage: { cellWidth: 80, halign: 'right', fontStyle: 'bold' },
-                    pl: { cellWidth: 90, halign: 'right', fontStyle: 'bold' }
+                    type: { cellWidth: 35, halign: 'center' , fontStyle: 'bold'},
+                    buyPrice: { cellWidth: 68, halign: 'right' , fontStyle: 'bold'},
+                    qty: { cellWidth: 32, halign: 'center' , fontStyle: 'bold'},
+                    exitPrice: { cellWidth: 68, halign: 'right', fontStyle: 'bold' },
+                    brokerage: { cellWidth: 68, halign: 'right', fontStyle: 'bold' },
+                    pl: { cellWidth: 80, halign: 'right', fontStyle: 'bold' }
                 },
                 didParseCell: (data) => {
                     if (data.section === 'body') {
@@ -377,6 +377,36 @@ export default function Invoice() {
                             const typeVal = tableRows[data.row.index]?._type;
                             data.cell.styles.textColor = typeVal === 'BUY' ? [37, 99, 235] : [220, 38, 38];
                             data.cell.styles.fontStyle = 'bold';
+                        }
+                    }
+                },
+                willDrawCell: (data) => {
+                    if (data.section === 'body' && data.column.dataKey === 'stock') {
+                        // Clear text to prevent default autoTable rendering
+                        data.cell.text = [];
+                    }
+                },
+                didDrawCell: (data) => {
+                    if (data.section === 'body' && data.column.dataKey === 'stock') {
+                        const rowData = tableRows[data.row.index];
+                        if (rowData) {
+                            const symbol = rowData._symbol || '';
+                            const dateStr = rowData._dateStr || '';
+
+                            const paddingX = 6;
+                            const textX = data.cell.x + paddingX;
+
+                            // Draw Symbol (Bold, Slate 900)
+                            pdf.setFont(activeFont, 'bold');
+                            pdf.setFontSize(8);
+                            pdf.setTextColor(15, 23, 42);
+                            pdf.text(symbol, textX, data.cell.y + 12);
+
+                            // Draw Date (Normal, Slate 500 / Muted)
+                            pdf.setFont(activeFont, 'normal');
+                            pdf.setFontSize(6.5);
+                            pdf.setTextColor(100, 116, 139);
+                            pdf.text(dateStr, textX, data.cell.y + 21);
                         }
                     }
                 },
@@ -666,10 +696,10 @@ export default function Invoice() {
                             {invoiceData.map((item, idx) => (
                                 <tr key={idx} style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }} className="even:bg-slate-50/50 hover:bg-slate-50 transition-colors">
                                     <td className="px-4 py-4 text-center text-slate-400 font-semibold text-xs">{idx + 1}</td>
-                                    <td className="px-4 py-4 font-bold text-slate-900 text-xs">
+                                    <td className="px-4 py-4 text-slate-900 text-xs">
                                         <div className="flex flex-col">
-                                            <span>{item.symbol?.toUpperCase()}</span>
-                                            <span className="text-[10px] text-slate-400 font-medium mt-0.5">{formatDDMMM(item.date || item.createdAt)}</span>
+                                            <span className="font-bold">{item.symbol?.toUpperCase()}</span>
+                                            <span className="text-[9px] text-slate-500 font-normal mt-0.5">{formatDDMMM(item.date || item.createdAt)}</span>
                                         </div>
                                     </td>
                                     <td className="px-4 py-4 text-center">

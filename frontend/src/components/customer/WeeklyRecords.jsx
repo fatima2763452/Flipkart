@@ -198,7 +198,7 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
                   <div className="w-24 h-3 bg-slate-800 rounded animate-pulse"></div>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-800">
+              <div className="grid grid-cols-[0.7fr_1.2fr_1.7fr] gap-2 pt-3 border-t border-slate-800">
                 <div>
                    <div className="w-8 h-2 bg-slate-800 rounded animate-pulse mb-1"></div>
                    <div className="w-12 h-3 bg-slate-800 rounded animate-pulse"></div>
@@ -243,13 +243,22 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
                   </div>
                 )}
                 <div>
-                  <div className="flex items-center gap-2 mb-0.5">
+                  <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                     <span className="font-bold text-slate-100 text-base">{item.symbol}</span>
                     <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${
                       (item.action || '').toLowerCase() === 'buy' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
                     }`}>
                       {(item.action || 'Trade').toUpperCase()}
                     </span>
+                    {item.tradeCategory && (
+                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${
+                        item.tradeCategory === 'delivery' 
+                          ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' 
+                          : 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'
+                      }`}>
+                        {item.tradeCategory === 'delivery' ? 'DELIVERY' : 'INTRADAY'}
+                      </span>
+                    )}
                   </div>
                   <div className="text-[10px] text-slate-400 mt-1">
                     {new Date(item.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' })}
@@ -261,7 +270,7 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
                 <div className="text-[10px] text-slate-400">LTP: <span className="text-slate-300">{formatCurrency(item.ltp)}</span></div>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-800">
+            <div className="grid grid-cols-[0.7fr_1.2fr_1.7fr] gap-2 pt-3 border-t border-slate-800">
               <div>
                 <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">QTY</div>
                 <div className="font-mono text-xs font-semibold text-slate-200">{item.quantity.toLocaleString()}</div>
@@ -274,7 +283,7 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
                 <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">TOTAL P/L</div>
                 <div className={`font-mono text-xs font-bold ${getCalculatedRealizedPnl(item) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {getCalculatedRealizedPnl(item) >= 0 ? '+' : ''}{formatCurrency(getCalculatedRealizedPnl(item))}
-                  <span className="text-[10px] ml-1 font-semibold opacity-95">
+                  <span className="block sm:inline-block sm:ml-1 text-[10px] font-semibold opacity-95">
                     ({getCalculatedRealizedPnl(item) >= 0 ? '+' : ''}{(((getCalculatedRealizedPnl(item)) / (item.estimatedTotal || 1)) * 100).toFixed(2)}%)
                   </span>
                 </div>

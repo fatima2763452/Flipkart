@@ -349,15 +349,10 @@ export default function MarginReceipt() {
             // Bottom Section (Dashed ₹ Box, Received By & Stamp, Authorized Signatory)
             const footerY = cursorY + 10;
 
-            // Dashed currency box (Left)
-            pdf.setDrawColor(0, 8, 57);
-            pdf.setLineDash([3, 3], 0);
-            pdf.roundedRect(40, footerY, 140, 45, 4, 4, 'D');
-            pdf.setLineDash([]); // reset
-
+            // Currency text (Left)
             pdf.setFont(activeFont, 'bold');
             pdf.setFontSize(13);
-            pdf.text(`Rs. ${formatIndianCurrency(marginAmount)}`, 50, footerY + 26);
+            pdf.text(`Rs. ${formatIndianCurrency(marginAmount)}`, 40, footerY + 26);
 
             // Received By (Center)
             // const centerColX = 280;
@@ -693,11 +688,11 @@ export default function MarginReceipt() {
                     {/* Footer Box, Seal and Signatures */}
                     <div className="flex justify-between items-end mt-8">
                         {/* Currency Dash Box */}
-                        <div className="border-2 border-dashed border-[#000839] rounded-lg w-36 py-3 px-2 text-center bg-slate-50/30 shrink-0">
+                       
                             <span className="text-sm font-black text-[#000839]">
                                 ₹ {formatIndianCurrency(marginAmount)}
                             </span>
-                        </div>
+                        
 
                         {/* Received By and Stamp placeholder */}
                         <div className="flex flex-col items-center justify-center relative w-44 select-none mb-1">

@@ -265,9 +265,9 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                 </h4>
               </div>
               <div className="px-3 py-3 space-y-3">
-                <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
-                  <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Category</span>
-                  {isEditing ? (
+                {isEditing && (
+                  <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
+                    <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Category</span>
                     <select 
                       className="bg-slate-800 text-white rounded px-2 py-1 text-sm outline-none cursor-pointer text-right"
                       value={editData.tradeCategory === 'delivery' ? 'delivery' : 'normal'} 
@@ -276,12 +276,8 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                       <option value="normal">NORMAL</option>
                       <option value="delivery">DELIVERY</option>
                     </select>
-                  ) : (
-                    <span className={`text-sm font-bold uppercase ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                      {trade.tradeCategory === 'delivery' ? 'DELIVERY' : 'NORMAL'}
-                    </span>
-                  )}
-                </div>
+                  </div>
+                )}
                 {!isEditing && (
                   <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
                     <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Mode</span>

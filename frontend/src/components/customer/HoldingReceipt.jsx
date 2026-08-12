@@ -153,9 +153,14 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                   <h1 className={`text-xl font-black tracking-tight leading-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
 
                   </h1>
-                  <h2 className={`text-xl font-semibold tracking-widest uppercase ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
-                    ENTRY
-                  </h2>
+                  <div className="flex items-center gap-2 ml-3 mt-1">
+                    <span className={`text-xs font-medium ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
+                      ENTRY
+                    </span>
+                    <span className={`text-xs font-bold ${isBuy ? 'text-emerald-500' : 'text-rose-500'}`}>
+                      ({holding.type.toUpperCase()})
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -168,10 +173,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                   {holding.symbol}
                 </h3>
                 <div className="flex items-center gap-2 mt-1">
-
-                  <span className={`text-xs font-bold ${isBuy ? 'text-emerald-500' : 'text-rose-500'}`}>
-                    ({holding.type.toUpperCase()})
-                  </span>
+                  
                 </div>
               </div>
               <div className="text-right">
@@ -221,9 +223,9 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                 </h4>
               </div>
               <div className="px-3  py-3 space-y-3">
-                <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
-                  <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Category</span>
-                  {isEditing ? (
+                {isEditing && (
+                  <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
+                    <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Category</span>
                     <select 
                       className="bg-slate-800 text-white rounded px-2 py-1 text-sm outline-none cursor-pointer text-right"
                       value={editData.tradeCategory === 'delivery' ? 'delivery' : 'normal'} 
@@ -232,12 +234,8 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                       <option value="normal">NORMAL</option>
                       <option value="delivery">DELIVERY</option>
                     </select>
-                  ) : (
-                    <span className={`text-sm font-bold uppercase ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                      {holding.tradeCategory === 'delivery' ? 'DELIVERY' : 'NORMAL'}
-                    </span>
-                  )}
-                </div>
+                  </div>
+                )}
                 {!isEditing && (
                   <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
                     <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Mode</span>

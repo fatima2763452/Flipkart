@@ -217,7 +217,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                   : 'bg-cyan-600'
               }`}>
                 <h4 className="text-white text-lg font-bold tracking-wider uppercase">
-                  {(isEditing ? editData.tradeCategory : (holding.tradeCategory || 'normal')) === 'delivery' ? 'DELIVERY' : 'INTRADAY'}
+                  {(isEditing ? editData.tradeCategory : (holding.tradeCategory || 'normal')) === 'delivery' ? 'DELIVERY' : 'NORMAL'}
                 </h4>
               </div>
               <div className="px-3  py-3 space-y-3">
@@ -229,12 +229,12 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                       value={editData.tradeCategory === 'delivery' ? 'delivery' : 'normal'} 
                       onChange={e => setEditData({...editData, tradeCategory: e.target.value})}
                     >
-                      <option value="normal">INTRADAY</option>
+                      <option value="normal">NORMAL</option>
                       <option value="delivery">DELIVERY</option>
                     </select>
                   ) : (
                     <span className={`text-sm font-bold uppercase ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                      {holding.tradeCategory === 'delivery' ? 'DELIVERY' : 'INTRADAY'}
+                      {holding.tradeCategory === 'delivery' ? 'DELIVERY' : 'NORMAL'}
                     </span>
                   )}
                 </div>

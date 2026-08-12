@@ -229,7 +229,7 @@ const Holdings = ({ customer, onEditRequest }) => {
                           ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' 
                           : 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20'
                       }`}>
-                        {item.tradeCategory === 'delivery' ? 'DELIVERY' : 'INTRADAY'}
+                        {item.tradeCategory === 'delivery' ? 'DELIVERY' : 'NORMAL'}
                       </span>
                     )}
                   </div>

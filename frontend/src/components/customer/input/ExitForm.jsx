@@ -256,7 +256,7 @@ const ExitForm = ({ formatCurrency, customer, editingTradeData, setEditingTradeD
                 : 'bg-slate-950 text-slate-400 border border-slate-800 hover:bg-slate-800'
             }`}
           >
-            INTRADAY
+            NORMAL
           </button>
           <button 
             type="button"

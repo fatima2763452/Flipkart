@@ -195,7 +195,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                   </h1>
                  <div className="flex items-center gap-2 ml-3 mt-1">
                   <span className={`text-xs font-medium ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
-                    {type.charAt(0).toUpperCase() + type.slice(1)} 
+                    {type.toUpperCase()} 
                   </span>
                   <span className={`text-xs font-bold ${isBuy ? 'text-emerald-500' : 'text-rose-500'}`}>
                     ({productType})
@@ -257,11 +257,11 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
             <div className={`rounded-xl border overflow-hidden ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
               <div className={`px-4 py-1.5 text-center ${
                 (isEditing ? editData.tradeCategory : (trade.tradeCategory || 'normal')) === 'delivery' 
-                  ? 'bg-amber-600' 
+                  ? 'bg-blue-500' 
                   : 'bg-cyan-600'
               }`}>
                 <h4 className="text-white text-lg font-bold tracking-wider uppercase">
-                  {(isEditing ? editData.tradeCategory : (trade.tradeCategory || 'normal')) === 'delivery' ? 'DELIVERY' : 'INTRADAY'}
+                  {(isEditing ? editData.tradeCategory : (trade.tradeCategory || 'normal')) === 'delivery' ? 'DELIVERY' : 'NORMAL'}
                 </h4>
               </div>
               <div className="px-3 py-3 space-y-3">
@@ -273,12 +273,12 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                       value={editData.tradeCategory === 'delivery' ? 'delivery' : 'normal'} 
                       onChange={e => setEditData({...editData, tradeCategory: e.target.value})}
                     >
-                      <option value="normal">INTRADAY</option>
+                      <option value="normal">NORMAL</option>
                       <option value="delivery">DELIVERY</option>
                     </select>
                   ) : (
                     <span className={`text-sm font-bold uppercase ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                      {trade.tradeCategory === 'delivery' ? 'DELIVERY' : 'INTRADAY'}
+                      {trade.tradeCategory === 'delivery' ? 'DELIVERY' : 'NORMAL'}
                     </span>
                   )}
                 </div>

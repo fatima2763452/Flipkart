@@ -239,9 +239,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                 <div className={`font-bold text-sm leading-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                   {customer.name?.split(' ')[0] || 'User'}
                 </div>
-                {/* <div className={`text-[10px] mt-0.5 font-mono ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
-                  @{customer.id}
-                </div> */}
+               
               </div>
               <div className={`p-2 rounded-xl border flex flex-col items-center justify-center text-center ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
                 <div className={`text-[10px] font-bold uppercase tracking-wider mb-2 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -258,7 +256,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
               <div className={`px-4 py-1.5 text-center ${
                 (isEditing ? editData.tradeCategory : (trade.tradeCategory || 'normal')) === 'delivery' 
                   ? 'bg-blue-500' 
-                  : 'bg-cyan-600'
+                  : 'bg-blue-500'
               }`}>
                 <h4 className="text-white text-lg font-bold tracking-wider uppercase">
                   {(isEditing ? editData.tradeCategory : (trade.tradeCategory || 'normal')) === 'delivery' ? 'DELIVERY' : 'NORMAL'}
@@ -393,11 +391,11 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                   ? (theme === 'dark' ? 'bg-emerald-950/30 border-emerald-900/50' : 'bg-emerald-50 border-emerald-200')
                   : (theme === 'dark' ? 'bg-rose-950/30 border-rose-900/50' : 'bg-rose-50 border-rose-200')
               }`}>
-                <span className={`text-xs font-bold uppercase tracking-wider ${
+                <span className={`text-m font-bold uppercase tracking-wider  ${
                   originalRealizedPnl >= 0 
                     ? (theme === 'dark' ? 'text-emerald-400/80' : 'text-emerald-700/80')
                     : (theme === 'dark' ? 'text-rose-400/80' : 'text-rose-700/80')
-                }`}>TOTAL P/L</span>
+                }`}>P/L</span>
                 <span className={`text-m font-black tracking-tight ${originalRealizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                   {originalRealizedPnl >= 0 ? '+' : ''}{formatCurrency(originalRealizedPnl)}
                   <span className="text-s ml-2 font-bold">

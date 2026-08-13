@@ -215,8 +215,8 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
             <div className={`rounded-xl border overflow-hidden ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
               <div className={`px-4 py-1.5 text-center ${
                 (isEditing ? editData.tradeCategory : (holding.tradeCategory || 'normal')) === 'delivery' 
-                  ? 'bg-amber-600' 
-                  : 'bg-cyan-600'
+                  ? 'bg-blue-500' 
+                  : 'bg-blue-500'
               }`}>
                 <h4 className="text-white text-lg font-bold tracking-wider uppercase">
                   {(isEditing ? editData.tradeCategory : (holding.tradeCategory || 'normal')) === 'delivery' ? 'DELIVERY' : 'NORMAL'}
@@ -291,7 +291,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                     <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{formatCurrency(holding.totalBrokerage || 0)}</span>
                   )}
                 </div>
-                {!isEditing && (
+                {/* {!isEditing && (
                   <div className="flex justify-between items-center pt-1">
                     <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Unrealised P&L</span>
                     <span className={`text-sm font-bold ${displayUnrealisedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
@@ -301,7 +301,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                       </span>
                     </span>
                   </div>
-                )}
+                )} */}
               </div>
             </div>
 
@@ -311,10 +311,10 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                   ? (theme === 'dark' ? 'bg-emerald-950/30 border-emerald-900/50' : 'bg-emerald-50 border-emerald-200')
                   : (theme === 'dark' ? 'bg-rose-950/30 border-rose-900/50' : 'bg-rose-50 border-rose-200')
                 }`}>
-                <span className={`text-xs font-bold uppercase tracking-wider ${displayTotalPnl >= 0
+                <span className={`text-m font-bold uppercase tracking-wider  ${displayTotalPnl >= 0
                     ? (theme === 'dark' ? 'text-emerald-400/80' : 'text-emerald-700/80')
                     : (theme === 'dark' ? 'text-rose-400/80' : 'text-rose-700/80')
-                  }`}>TOTAL P/L</span>
+                  }`}>P/L</span>
                 <span className={`text-m font-black tracking-tight ${displayTotalPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                   {displayTotalPnl >= 0 ? '+' : ''}{formatCurrency(displayTotalPnl)}
                   <span className="text-xs ml-2 font-bold">

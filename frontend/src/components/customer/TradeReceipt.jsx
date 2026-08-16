@@ -370,7 +370,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                   </div>
                 )}
 
-                {!isEditing && displayRealizedPnl !== undefined && (
+                {/* {!isEditing && displayRealizedPnl !== undefined && (
                   <div className="flex justify-between items-center pt-1">
                     <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Realised P&L</span>
                     <span className={`text-sm font-bold ${displayRealizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
@@ -380,7 +380,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                       </span>
                     </span>
                   </div>
-                )}
+                )} */}
               </div>
             </div>
 
@@ -395,7 +395,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                   originalRealizedPnl >= 0 
                     ? (theme === 'dark' ? 'text-emerald-400/80' : 'text-emerald-700/80')
                     : (theme === 'dark' ? 'text-rose-400/80' : 'text-rose-700/80')
-                }`}>P/L</span>
+                }`}>P&L</span>
                 <span className={`text-m font-black tracking-tight ${originalRealizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                   {originalRealizedPnl >= 0 ? '+' : ''}{formatCurrency(originalRealizedPnl)}
                   <span className="text-s ml-2 font-bold">

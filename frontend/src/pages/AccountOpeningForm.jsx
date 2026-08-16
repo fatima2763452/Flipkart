@@ -196,7 +196,7 @@ const AccountOpeningForm = () => {
 
       {/* Hidden PDF Template */}
       <div id="pdf-wrapper" style={{ display: 'none', position: 'absolute', top: 0, left: 0, zIndex: 9999, width: '800px', backgroundColor: '#ffffff' }}>
-        <div id="pdf-content" style={{ backgroundColor: '#ffffff', color: '#000000', padding: '40px', fontFamily: 'sans-serif', width: '800px', minHeight: '1160px', position: 'relative', boxSizing: 'border-box' }}>
+        <div id="pdf-content" style={{ backgroundColor: '#ffffff', color: '#000000', border: '1.5px solid #000000', padding: '40px', fontFamily: 'sans-serif', width: '800px', minHeight: '1160px', position: 'relative', boxSizing: 'border-box' }}>
           {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid #1e293b', paddingBottom: '24px', marginBottom: '32px' }}>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>

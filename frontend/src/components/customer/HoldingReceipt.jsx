@@ -314,7 +314,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                 <span className={`text-m font-bold uppercase tracking-wider  ${displayTotalPnl >= 0
                     ? (theme === 'dark' ? 'text-emerald-400/80' : 'text-emerald-700/80')
                     : (theme === 'dark' ? 'text-rose-400/80' : 'text-rose-700/80')
-                  }`}>P/L</span>
+                  }`}>P&L</span>
                 <span className={`text-m font-black tracking-tight ${displayTotalPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                   {displayTotalPnl >= 0 ? '+' : ''}{formatCurrency(displayTotalPnl)}
                   <span className="text-xs ml-2 font-bold">

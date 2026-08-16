@@ -171,6 +171,13 @@ export default function Invoice() {
             return date >= start && date <= end;
         });
 
+        // Sort trades: newest to oldest
+        filtered.sort((a, b) => {
+            const dateA = new Date(a.date || a.createdAt);
+            const dateB = new Date(b.date || b.createdAt);
+            return dateB - dateA;
+        });
+
         setFilterStats({
             total: orders.length,
             matched: filtered.length,

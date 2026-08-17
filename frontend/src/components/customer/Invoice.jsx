@@ -364,7 +364,7 @@ export default function Invoice() {
                     lineColor: [241, 245, 249]    // Slate 100
                 },
                 columnStyles: {
-                    idx: { cellWidth: 20, halign: 'center', fontStyle: 'bold' },
+                    idx: { cellWidth: 28, halign: 'center', fontStyle: 'bold' },
                     stock: { cellWidth: 'auto', halign: 'left', fontStyle: 'bold' },
                     type: { cellWidth: 35, halign: 'center' , fontStyle: 'bold'},
                     buyPrice: { cellWidth: 68, halign: 'right' , fontStyle: 'bold'},
@@ -441,9 +441,14 @@ export default function Invoice() {
 
             // Left: Margin
             if (margin) {
+                const marginVal = formatPDFNumber(margin);
+                const marginValW = pdf.getTextWidth(marginVal);
+                const totalMarginW = rupeeLgDark.w + 1 + marginValW;
+                const boxW = Math.max(160, totalMarginW + 24); // 12pt padding on each side
+
                 pdf.setFillColor(248, 250, 252); // Slate 50
                 pdf.setDrawColor(241, 245, 249); // Slate 100
-                pdf.roundedRect(marginSize, cursorY, 160, 45, 6, 6, 'FD');
+                pdf.roundedRect(marginSize, cursorY, boxW, 45, 6, 6, 'FD');
                 
                 pdf.setFont(activeFont, 'bold');
                 pdf.setFontSize(8);
@@ -452,7 +457,6 @@ export default function Invoice() {
 
                 pdf.setFontSize(11);
                 pdf.setTextColor(...darkText);
-                const marginVal = formatPDFNumber(margin);
                 const mX = marginSize + 10;
                 const mY = cursorY + 34;
                 pdf.addImage(rupeeLgDark.dataUrl, 'PNG', mX, mY - rupeeLgDark.h * 0.72, rupeeLgDark.w, rupeeLgDark.h);
@@ -689,7 +693,7 @@ export default function Invoice() {
                     <table className="w-full text-sm text-left border-collapse">
                         <thead style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }} className="bg-[#0f172a] text-white font-bold uppercase text-[11px] tracking-wider">
                             <tr>
-                                <th className="px-4 py-3.5 text-center w-12">No.</th>
+                                <th className="px-2 py-3.5 text-center w-16">No.</th>
                                 <th className="px-4 py-3.5 text-left">STOCK</th>
                                 <th className="px-4 py-3.5 text-center w-20">MODE</th>
                                 <th className="px-4 py-3.5 text-right">AVG. PRICE</th>
@@ -702,7 +706,7 @@ export default function Invoice() {
                         <tbody className="divide-y divide-slate-100">
                             {invoiceData.map((item, idx) => (
                                 <tr key={idx} style={{ pageBreakInside: 'avoid', breakInside: 'avoid' }} className="even:bg-slate-50/50 hover:bg-slate-50 transition-colors">
-                                    <td className="px-4 py-4 text-center text-slate-400 font-semibold text-xs">{idx + 1}</td>
+                                    <td className="px-2 py-4 text-center text-slate-400 font-semibold text-xs">{idx + 1}</td>
                                     <td className="px-4 py-4 text-slate-900 text-xs">
                                         <div className="flex flex-col">
                                             <span className="font-bold">{item.symbol?.toUpperCase()}</span>
@@ -747,9 +751,9 @@ export default function Invoice() {
                     {/* Display Margin if entered */}
                     <div>
                         {margin && (
-                            <div className="text-xs bg-slate-50 border border-slate-100 p-3 rounded-lg text-slate-600">
-                                <span className="font-semibold block text-slate-500 mb-1">MONEY MARGIN USED</span>
-                                <span className="text-sm font-bold text-slate-800">{formatIndianCurrency(margin)}</span>
+                            <div className="text-xs bg-slate-50 border border-slate-100 p-3 rounded-lg text-slate-600 flex-shrink-0 min-w-[160px]">
+                                <span className="font-semibold block text-slate-500 mb-1 whitespace-nowrap">MONEY MARGIN USED</span>
+                                <span className="text-sm font-bold text-slate-800 whitespace-nowrap">{formatIndianCurrency(margin)}</span>
                             </div>
                         )}
                     </div>

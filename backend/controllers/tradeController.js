@@ -24,12 +24,12 @@ const createTrade = async (req, res) => {
     const qtyNum = parseFloat(quantity) || 0;
     const priceNum = parseFloat(price) || 0;
     const estimatedTotal = qtyNum * priceNum;
-    
+
     // Server-side brokerage calculation
     let activeBrokerageType = brokerageType || 'percentage';
     let valInput = (brokerageValue !== undefined && brokerageValue !== '') ? brokerageValue : brokeragePct;
     let activeBrokerageValue = valInput !== undefined && valInput !== '' ? parseFloat(valInput) : 0.01;
-    
+
     let activeBrokeragePct = 0.01;
     let brokerageFee = 0;
 
@@ -73,7 +73,7 @@ const createTrade = async (req, res) => {
       } else if (action.toLowerCase() === 'sell') { // Exiting a Short position (originally sold)
         realizedPnl = (priceNum - parseFloat(ltp)) * qtyNum;
       }
-      
+
       realizedPnl -= brokerageFee;
       tradeData.realizedPnl = realizedPnl;
 
@@ -103,14 +103,14 @@ const getCustomerHoldings = async (req, res) => {
 
     // Only fetch entries for Holdings tab as requested by user
     const entries = await Entry.find({ customerId }).lean();
-    
+
     const allTrades = [
       ...entries.map(e => ({ ...e, type: 'entry' }))
     ];
 
     // Sort by date then createdAt
     allTrades.sort((a, b) => new Date(a.date) - new Date(b.date) || new Date(a.createdAt) - new Date(b.createdAt));
-    
+
     const holdingsMap = {};
 
     allTrades.forEach(trade => {
@@ -159,7 +159,7 @@ const getCustomerHoldings = async (req, res) => {
       const netQty = h.totalBuyQty - h.totalSellQty;
       let type = '';
       let avgCost = 0;
-      
+
       if (netQty > 0) {
         type = 'Buy';
         avgCost = h.totalBuyQty > 0 ? h.totalBuyCost / h.totalBuyQty : 0;
@@ -176,9 +176,9 @@ const getCustomerHoldings = async (req, res) => {
       if (type === 'Buy') {
         upnl = (h.lastPrice - avgCost) * absoluteQty;
       } else if (type === 'Sell') {
-        upnl = (avgCost - h.lastPrice) * absoluteQty; 
+        upnl = (avgCost - h.lastPrice) * absoluteQty;
       }
-      
+
       // Deduct total accumulated brokerage from unrealized P/L
       upnl -= h.totalBrokerage;
 
@@ -190,7 +190,7 @@ const getCustomerHoldings = async (req, res) => {
         avgCost,
         lastPrice: h.lastPrice,
         totalInvestment: h.customInvested !== undefined ? h.customInvested : absoluteQty * avgCost,
-        totalValue: h.customInvested !== undefined 
+        totalValue: h.customInvested !== undefined
           ? (h.customInvested + (h.customUpnl !== undefined ? h.customUpnl : upnl))
           : (absoluteQty * avgCost + upnl),
         totalBrokerage: h.totalBrokerage,
@@ -202,8 +202,8 @@ const getCustomerHoldings = async (req, res) => {
         tradeCategory: h.tradeCategory || 'normal'
       };
     })
-    .filter(h => h.type !== 'Closed') // Filter out fully exited positions
-    .sort((a, b) => b.lastUpdated - a.lastUpdated); // Sort by most recent activity descending
+      .filter(h => h.type !== 'Closed') // Filter out fully exited positions
+      .sort((a, b) => b.lastUpdated - a.lastUpdated); // Sort by most recent activity descending
 
     res.json(holdings);
   } catch (error) {
@@ -229,7 +229,7 @@ const getWeeklyRecords = async (req, res) => {
 const deleteHolding = async (req, res) => {
   try {
     const { customerId, symbol } = req.params;
-    
+
     if (!customerId || !symbol) {
       return res.status(400).json({ message: 'Customer ID and Symbol are required' });
     }
@@ -237,7 +237,7 @@ const deleteHolding = async (req, res) => {
     // Delete all entries and exits for this symbol to wipe the holding completely
     await Entry.deleteMany({ customerId, symbol: symbol.toUpperCase() });
     await Exit.deleteMany({ customerId, symbol: symbol.toUpperCase() });
-    
+
     res.json({ message: 'Holding deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -248,30 +248,30 @@ const editHolding = async (req, res) => {
   try {
     const { customerId, symbol } = req.params;
     const { quantity, lot, price, ltp, marginRs, brokerageFee, invested, unrealisedPnl, totalPnl, tradeCategory } = req.body;
-    
+
     // Find the most recent entry for this holding
     const entries = await Entry.find({ customerId, symbol: symbol.toUpperCase() }).sort({ date: -1 });
-    
+
     if (entries.length === 0) {
       return res.status(404).json({ message: 'No entries found for this holding' });
     }
 
     const latestEntry = entries[0];
-    
+
     if (quantity !== undefined) latestEntry.quantity = parseFloat(quantity) || 0;
     if (lot !== undefined) latestEntry.lot = parseFloat(lot) || 0;
     if (price !== undefined) latestEntry.price = parseFloat(price) || 0;
     if (ltp !== undefined) latestEntry.ltp = parseFloat(ltp) || 0;
     if (marginRs !== undefined) latestEntry.marginRs = parseFloat(marginRs) || 0;
     if (tradeCategory !== undefined) latestEntry.tradeCategory = tradeCategory;
-    
+
     // Custom overrides for display
     if (invested !== undefined) latestEntry.customInvested = parseFloat(invested) || 0;
     if (unrealisedPnl !== undefined) latestEntry.customUpnl = parseFloat(unrealisedPnl) || 0;
     if (totalPnl !== undefined) latestEntry.customTotalPnl = parseFloat(totalPnl) || 0;
-    
+
     latestEntry.estimatedTotal = latestEntry.quantity * latestEntry.price;
-    
+
     if (brokerageFee !== undefined) {
       latestEntry.brokerageFee = parseFloat(brokerageFee) || 0;
       latestEntry.brokerageType = 'rupees';
@@ -290,7 +290,7 @@ const editHolding = async (req, res) => {
     if (latestEntry.customInvested !== undefined && latestEntry.customInvested !== null) {
       latestEntry.customInvested = latestEntry.quantity * latestEntry.price;
     }
-    
+
     const activeAction = (latestEntry.action || 'buy').toLowerCase();
     let calculatedUpnl = 0;
     if (activeAction === 'buy') {
@@ -299,7 +299,7 @@ const editHolding = async (req, res) => {
       calculatedUpnl = (latestEntry.price - latestEntry.ltp) * latestEntry.quantity;
     }
     calculatedUpnl -= latestEntry.brokerageFee;
-    
+
     if (latestEntry.customUpnl !== undefined && latestEntry.customUpnl !== null) {
       latestEntry.customUpnl = calculatedUpnl;
     }
@@ -308,10 +308,10 @@ const editHolding = async (req, res) => {
     }
 
     await latestEntry.save();
-    
+
     // If there are exits for this holding, we might need to update their entry prices? 
     // Let's keep it simple and just update the entry.
-    
+
     res.json({ message: 'Holding updated successfully', trade: latestEntry });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -321,13 +321,13 @@ const editHolding = async (req, res) => {
 const deleteExit = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     if (!id) {
       return res.status(400).json({ message: 'Exit ID is required' });
     }
 
     await Exit.findByIdAndDelete(id);
-    
+
     res.json({ message: 'Exit record deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -346,12 +346,12 @@ const editTrade = async (req, res) => {
     const qtyNum = parseFloat(quantity) || 0;
     const priceNum = parseFloat(price) || 0;
     const estimatedTotal = qtyNum * priceNum;
-    
+
     // Server-side brokerage calculation
     let activeBrokerageType = brokerageType || 'percentage';
     let valInput = (brokerageValue !== undefined && brokerageValue !== '') ? brokerageValue : brokeragePct;
     let activeBrokerageValue = valInput !== undefined && valInput !== '' ? parseFloat(valInput) : 0.01;
-    
+
     let activeBrokeragePct = 0.01;
     let brokerageFee = 0;
 
@@ -385,12 +385,12 @@ const editTrade = async (req, res) => {
     if (type === 'entry') {
       updatedTrade = await Entry.findByIdAndUpdate(id, tradeData, { returnDocument: 'after' });
     } else if (type === 'exit') {
-        let realizedPnl = 0;
-        if (action.toLowerCase() === 'buy') { // Exiting a Long position (originally bought)
-          realizedPnl = (parseFloat(ltp) - priceNum) * qtyNum;
-        } else if (action.toLowerCase() === 'sell') { // Exiting a Short position (originally sold)
-          realizedPnl = (priceNum - parseFloat(ltp)) * qtyNum;
-        }
+      let realizedPnl = 0;
+      if (action.toLowerCase() === 'buy') { // Exiting a Long position (originally bought)
+        realizedPnl = (parseFloat(ltp) - priceNum) * qtyNum;
+      } else if (action.toLowerCase() === 'sell') { // Exiting a Short position (originally sold)
+        realizedPnl = (priceNum - parseFloat(ltp)) * qtyNum;
+      }
       realizedPnl -= brokerageFee;
       tradeData.realizedPnl = realizedPnl;
 
@@ -418,13 +418,13 @@ const bulkDeleteEntries = async (req, res) => {
       await Exit.deleteMany({ customerId, symbol: { $in: upperSymbols } });
       return res.json({ message: 'Holdings deleted successfully' });
     }
-    
+
     const { ids } = req.body;
     if (ids && Array.isArray(ids) && ids.length > 0) {
       await Entry.deleteMany({ _id: { $in: ids } });
       return res.json({ message: 'Entries deleted successfully' });
     }
-    
+
     res.status(400).json({ message: 'Invalid payload for bulk delete. Provide symbols or ids.' });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -437,7 +437,7 @@ const bulkDeleteExits = async (req, res) => {
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       return res.status(400).json({ message: 'No IDs provided for deletion' });
     }
-    
+
     await Exit.deleteMany({ _id: { $in: ids } });
     res.json({ message: 'Exits deleted successfully' });
   } catch (error) {

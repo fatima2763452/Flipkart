@@ -391,12 +391,12 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                   ? (theme === 'dark' ? 'bg-emerald-950/30 border-emerald-900/50' : 'bg-emerald-50 border-emerald-200')
                   : (theme === 'dark' ? 'bg-rose-950/30 border-rose-900/50' : 'bg-rose-50 border-rose-200')
               }`}>
-                <span className={`text-m font-bold uppercase tracking-wider  ${
+                <span className={`text-xl font-bold uppercase tracking-wider  ${
                   originalRealizedPnl >= 0 
                     ? (theme === 'dark' ? 'text-emerald-400/80' : 'text-emerald-700/80')
                     : (theme === 'dark' ? 'text-rose-400/80' : 'text-rose-700/80')
                 }`}>P&L</span>
-                <span className={`text-m font-black tracking-tight ${originalRealizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                <span className={`text-xl font-black tracking-tight ${originalRealizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                   {originalRealizedPnl >= 0 ? '+' : ''}{formatCurrency(originalRealizedPnl)}
                   <span className="text-s ml-2 font-bold">
                     ({getPnlPercent(originalRealizedPnl, investedAmount)})

@@ -20,6 +20,7 @@ const AccountOpeningForm = () => {
   });
 
   const [photo, setPhoto] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0];
@@ -73,7 +74,7 @@ const AccountOpeningForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    generatePDF();
+    setShowPreview(true);
   };
 
   // Reusable PDF field styles
@@ -188,7 +189,7 @@ const AccountOpeningForm = () => {
 
           <div className="mt-10 flex justify-end">
             <button type="submit" className="bg-blue-600 hover:bg-blue-500 text-white font-bold uppercase tracking-wider py-3 px-8 rounded-lg shadow-lg flex items-center gap-2 transition-all">
-              <span className="material-symbols-outlined">download</span> Submit & Download PDF
+              <span className="material-symbols-outlined">visibility</span> Submit & View Preview
             </button>
           </div>
         </form>
@@ -324,6 +325,137 @@ const AccountOpeningForm = () => {
         </div>
           
       </div>
+
+      {/* Preview Modal */}
+      {showPreview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-4 overflow-y-auto animate-in fade-in duration-300">
+          <div className="bg-slate-900 border border-slate-800 rounded-xl max-w-2xl w-full p-6 shadow-2xl flex flex-col max-h-[90vh]">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center pb-4 border-b border-slate-800 mb-4">
+              <h2 className="text-lg font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <span className="material-symbols-outlined text-blue-400">visibility</span> Application Preview
+              </h2>
+              <button onClick={() => setShowPreview(false)} className="text-slate-400 hover:text-white transition-colors">
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+
+            {/* Modal Body / Scrollable Preview */}
+            <div className="flex-1 overflow-y-auto bg-white text-black p-8 rounded-lg mb-6 border border-slate-700 font-sans" style={{ minHeight: '400px' }}>
+              {/* Header inside preview */}
+              <div className="flex justify-between items-start border-b-2 border-slate-800 pb-4 mb-6">
+                <div className="flex-1 flex flex-col gap-2">
+                  <img src={logo} alt="Radhe Brokerage Logo" className="h-16 w-auto object-contain align-start self-start" />
+                  <p className="text-[12px] font-bold text-slate-600 uppercase tracking-wide m-0">
+                    Trading account segment activation
+                  </p>
+                </div>
+                {photo ? (
+                  <div className="w-[100px] h-[130px] border border-slate-300 rounded overflow-hidden flex-shrink-0">
+                    <img src={photo} alt="Customer" className="w-full h-full object-cover" />
+                  </div>
+                ) : (
+                  <div className="w-[100px] h-[130px] border border-dashed border-slate-300 rounded flex items-center justify-center text-center text-[10px] text-slate-400 flex-shrink-0 p-2">
+                    Passport Size<br/>Photo Here
+                  </div>
+                )}
+              </div>
+
+              {/* Fields list */}
+              <div className="flex flex-col gap-4 text-sm font-bold text-black uppercase">
+                <div className="flex items-baseline gap-2 border-b border-dashed border-slate-200 pb-2">
+                  <span className="text-slate-500 text-xs tracking-wider">Customer Name :</span>
+                  <span className="text-black">{formData.customerName || '-'}</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-dashed border-slate-200 pb-2">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-slate-500 text-xs tracking-wider">Customer ID :</span>
+                    <span className="text-black">{formData.customerId || '-'}</span>
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-slate-500 text-xs tracking-wider">Segment :</span>
+                    <span className="text-black">{formData.segment}</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-dashed border-slate-200 pb-2">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-slate-500 text-xs tracking-wider">Date of Birth :</span>
+                    <span className="text-black">{formData.dob ? new Date(formData.dob).toLocaleDateString('en-GB') : '-'}</span>
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-slate-500 text-xs tracking-wider">Gender :</span>
+                    <span className="text-black">{formData.gender}</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-dashed border-slate-200 pb-2">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-slate-500 text-xs tracking-wider">Mobile Number :</span>
+                    <span className="text-black font-mono tracking-wider">XXXXXX{formData.mobileLast4 || 'XXXX'}</span>
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-slate-500 text-xs tracking-wider">Initial Deposit :</span>
+                    <span className="text-black">{formData.initialDeposit ? `₹ ${formData.initialDeposit}` : '-'}</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-dashed border-slate-200 pb-2">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-slate-500 text-xs tracking-wider">Aadhaar Number :</span>
+                    <span className="text-black font-mono tracking-wider">XXXXXXXX{formData.aadhaarLast4 || 'XXXX'}</span>
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-slate-500 text-xs tracking-wider">PAN Number :</span>
+                    <span className="text-black font-mono tracking-wider">XXXXXX{formData.panLast4.toUpperCase() || 'XXXX'}</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-dashed border-slate-200 pb-2">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-slate-500 text-xs tracking-wider">Reference Name :</span>
+                    <span className="text-black">{formData.refName || '-'}</span>
+                  </div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-slate-500 text-xs tracking-wider">Date of Application :</span>
+                    <span className="text-black">{formData.applicationDate ? new Date(formData.applicationDate).toLocaleDateString('en-GB') : '-'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Note */}
+              <div className="mt-8 pt-4 border-t border-slate-200 text-center">
+                <div className="text-red-600 text-[11px] font-bold leading-normal">
+                  <strong>Note:</strong> We are not registered with SEBI. High-leverage trading involves significant financial risk. Please trade at your own risk. The company shall not be responsible for any profit, loss, or financial consequences arising from your trading activities.
+                </div>
+                <div className="mt-4 text-black text-[11px] font-extrabold tracking-widest">
+                  RADHE BROKERAGE PVT. LTD.
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowPreview(false)}
+                className="flex-1 py-3 rounded-lg text-sm font-bold uppercase tracking-wider text-slate-300 bg-slate-800 hover:bg-slate-700 transition-colors"
+              >
+                Close & Edit
+              </button>
+              <button
+                onClick={() => {
+                  generatePDF();
+                  setShowPreview(false);
+                }}
+                className="flex-1 py-3 rounded-lg text-sm font-bold uppercase tracking-wider text-white bg-blue-600 hover:bg-blue-500 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20"
+              >
+                <span className="material-symbols-outlined text-[18px]">download</span> Confirm & Download
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

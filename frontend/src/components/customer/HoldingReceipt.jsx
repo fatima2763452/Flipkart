@@ -283,7 +283,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                     <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{formatCurrency(holding.totalMargin || 0)}</span>
                   )}
                 </div>
-                <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
+                <div className={`flex justify-between items-center border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
                   <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Brokerage</span>
                   {isEditing ? (
                     <input type="number" className="w-24 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.brokerageFee} onChange={e => setEditData({ ...editData, brokerageFee: e.target.value })} />
@@ -307,15 +307,15 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
 
             {/* Total P&L Footer */}
             {!isEditing && (
-              <div className={`mt-4 p-2 rounded-xl border flex justify-between items-center ${displayTotalPnl >= 0
+              <div className={`mt-4 p-4 rounded-xl border flex justify-between items-center ${displayTotalPnl >= 0
                   ? (theme === 'dark' ? 'bg-emerald-950/30 border-emerald-900/50' : 'bg-emerald-50 border-emerald-200')
                   : (theme === 'dark' ? 'bg-rose-950/30 border-rose-900/50' : 'bg-rose-50 border-rose-200')
                 }`}>
-                <span className={`text-m font-bold uppercase tracking-wider  ${displayTotalPnl >= 0
+                <span className={`text-xl font-bold uppercase tracking-wider  ${displayTotalPnl >= 0
                     ? (theme === 'dark' ? 'text-emerald-400/80' : 'text-emerald-700/80')
                     : (theme === 'dark' ? 'text-rose-400/80' : 'text-rose-700/80')
                   }`}>P&L</span>
-                <span className={`text-m font-black tracking-tight ${displayTotalPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                <span className={`text-xl font-black tracking-tight ${displayTotalPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                   {displayTotalPnl >= 0 ? '+' : ''}{formatCurrency(displayTotalPnl)}
                   <span className="text-xs ml-2 font-bold">
                     ({getPnlPercent(displayTotalPnl, displayInvested)})

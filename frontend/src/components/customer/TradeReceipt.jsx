@@ -320,7 +320,25 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                   )}
                 </div>
 
-                <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
+                
+
+                {(isEditing || parseFloat(trade.marginRs) > 0 || parseFloat(trade.marginPct) > 0) && (
+                  <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
+                    <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Money Margin</span>
+                    {isEditing ? (
+                      <input type="number" className="w-24 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.marginRs || editData.marginPct} onChange={e => setEditData({...editData, marginRs: e.target.value})} />
+                    ) : (
+                      <span className={`text-sm font-bold flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                        {parseFloat(trade.marginPct) > 0 && (
+                          <span className="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">{trade.marginPct}%</span>
+                        )}
+                        {formatCurrency(trade.marginRs)}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                <div className={`flex justify-between items-center  border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
                   <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Brokerage</span>
                   {isEditing ? (
                     <div className="flex items-center gap-1.5">
@@ -353,22 +371,6 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                     </span>
                   )}
                 </div>
-
-                {(isEditing || parseFloat(trade.marginRs) > 0 || parseFloat(trade.marginPct) > 0) && (
-                  <div className={`flex justify-between items-center  border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
-                    <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Money Margin</span>
-                    {isEditing ? (
-                      <input type="number" className="w-24 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.marginRs || editData.marginPct} onChange={e => setEditData({...editData, marginRs: e.target.value})} />
-                    ) : (
-                      <span className={`text-sm font-bold flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                        {parseFloat(trade.marginPct) > 0 && (
-                          <span className="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">{trade.marginPct}%</span>
-                        )}
-                        {formatCurrency(trade.marginRs)}
-                      </span>
-                    )}
-                  </div>
-                )}
 
                 {/* {!isEditing && displayRealizedPnl !== undefined && (
                   <div className="flex justify-between items-center pt-1">

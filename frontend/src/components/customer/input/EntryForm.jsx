@@ -280,7 +280,8 @@ const EntryForm = ({ formatCurrency, customer, editingTradeData, setEditingTrade
           <input 
             type="number" 
             required
-            min="1"
+            step="any"
+            min="0.000001"
             value={quantity}
             onChange={e => setQuantity(e.target.value)}
             placeholder="100"
@@ -291,6 +292,7 @@ const EntryForm = ({ formatCurrency, customer, editingTradeData, setEditingTrade
           <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Lot</label>
           <input 
             type="number" 
+            step="any"
             min="0"
             value={lot}
             onChange={e => setLot(e.target.value)}
@@ -305,8 +307,8 @@ const EntryForm = ({ formatCurrency, customer, editingTradeData, setEditingTrade
             <input 
               type="number" 
               required
-              step="0.01"
-              min="0.01"
+              step="any"
+              min="0.000001"
               value={price}
               onChange={e => setPrice(e.target.value)}
               placeholder="150.00"
@@ -321,8 +323,8 @@ const EntryForm = ({ formatCurrency, customer, editingTradeData, setEditingTrade
             <input 
               type="number" 
               required
-              step="0.01"
-              min="0.01"
+              step="any"
+              min="0.000001"
               value={ltp}
               onChange={e => setLtp(e.target.value)}
               placeholder="155.00"
@@ -340,6 +342,7 @@ const EntryForm = ({ formatCurrency, customer, editingTradeData, setEditingTrade
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 font-mono text-sm">₹</span>
             <input 
               type="number" 
+              step="any"
               value={marginRs}
               onChange={e => setMarginRs(e.target.value)}
               placeholder="0.00"
@@ -352,7 +355,7 @@ const EntryForm = ({ formatCurrency, customer, editingTradeData, setEditingTrade
           <div className="relative">
             <input 
               type="number" 
-              step="0.01"
+              step="any"
               value={marginPct}
               onChange={e => setMarginPct(e.target.value)}
               placeholder="10"
@@ -383,7 +386,7 @@ const EntryForm = ({ formatCurrency, customer, editingTradeData, setEditingTrade
           <div className="relative">
             <input 
               type="number" 
-              step="0.01"
+              step="any"
               value={brokerage}
               onChange={e => setBrokerage(e.target.value)}
               placeholder="0.01"

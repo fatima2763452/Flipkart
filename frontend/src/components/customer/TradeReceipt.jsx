@@ -46,7 +46,12 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
     return () => window.removeEventListener('keydown', handleEsc);
   }, [onClose]);
 
-  const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(val);
+  const formatCurrency = (val) => new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4
+  }).format(val);
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const d = new Date(dateStr);
@@ -286,8 +291,8 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                   <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Qty (Lot)</span>
                   {isEditing ? (
                     <div className="flex gap-2">
-                      <input type="number" className="w-16 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.quantity} onChange={e => setEditData({...editData, quantity: e.target.value})} placeholder="Qty" />
-                      <input type="number" className="w-16 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.lot} onChange={e => setEditData({...editData, lot: e.target.value})} placeholder="Lot" />
+                      <input type="number" step="any" className="w-16 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.quantity} onChange={e => setEditData({...editData, quantity: e.target.value})} placeholder="Qty" />
+                      <input type="number" step="any" className="w-16 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.lot} onChange={e => setEditData({...editData, lot: e.target.value})} placeholder="Lot" />
                     </div>
                   ) : (
                     <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
@@ -299,7 +304,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                 <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
                   <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{isShortExit ? 'Avg' : 'Avg'}</span>
                   {isEditing ? (
-                    <input type="number" className="w-24 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.price} onChange={e => setEditData({...editData, price: e.target.value})} />
+                    <input type="number" step="any" className="w-24 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.price} onChange={e => setEditData({...editData, price: e.target.value})} />
                   ) : (
                     <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{formatCurrency(isExit ? trade.price : (trade.entryPrice || 0))}</span>
                   )}
@@ -314,7 +319,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                 <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
                   <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Exit Price</span>
                   {isEditing ? (
-                    <input type="number" className="w-24 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.ltp} onChange={e => setEditData({...editData, ltp: e.target.value})} />
+                    <input type="number" step="any" className="w-24 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.ltp} onChange={e => setEditData({...editData, ltp: e.target.value})} />
                   ) : (
                     <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{formatCurrency(isExit ? trade.ltp : trade.price)}</span>
                   )}
@@ -326,7 +331,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                   <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
                     <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Money Margin</span>
                     {isEditing ? (
-                      <input type="number" className="w-24 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.marginRs || editData.marginPct} onChange={e => setEditData({...editData, marginRs: e.target.value})} />
+                      <input type="number" step="any" className="w-24 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.marginRs || editData.marginPct} onChange={e => setEditData({...editData, marginRs: e.target.value})} />
                     ) : (
                       <span className={`text-sm font-bold flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                         {parseFloat(trade.marginPct) > 0 && (
@@ -344,7 +349,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                     <div className="flex items-center gap-1.5">
                       <input 
                         type="number" 
-                        step="0.01" 
+                        step="any" 
                         className="w-20 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" 
                         value={editData.brokerageValue} 
                         onChange={e => setEditData({...editData, brokerageValue: e.target.value})} 

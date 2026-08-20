@@ -14,7 +14,12 @@ const InputMode = ({ customer, editingTradeData, setEditingTradeData }) => {
     }
   }, [editingTradeData]);
 
-  const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(val);
+  const formatCurrency = (val) => new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4
+  }).format(val);
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">

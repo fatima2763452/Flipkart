@@ -70,7 +70,12 @@ const Holdings = ({ customer, onEditRequest }) => {
     }
   };
 
-  const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(val);
+  const formatCurrency = (val) => new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4
+  }).format(val);
 
   const totalEquity = holdings.reduce((sum, item) => sum + item.totalValue, 0);
   const totalUpnl = holdings.reduce((sum, item) => sum + item.upnl, 0);

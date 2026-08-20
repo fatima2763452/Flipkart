@@ -66,7 +66,12 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
     }
   };
 
-  const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(val);
+  const formatCurrency = (val) => new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4
+  }).format(val);
   
   const getCalculatedRealizedPnl = (item) => {
     if (!item) return 0;
@@ -327,7 +332,8 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
               // The backend route is /trades/edit/:id
               await api.put(`/trades/edit/${selectedReceipt._id}`, {
                 ...selectedReceipt,
-                ...updatedData
+                ...updatedData,
+                type: 'exit'
               });
               fetchExits();
               setSelectedReceipt(null);

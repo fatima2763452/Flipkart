@@ -3,11 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import AvgCalcModal from '../components/customer/AvgCalcModal';
 
+const formatCurrency = (val) => new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2
+}).format(val);
+
 const CustomerCard = ({ customer, onClick, onDeleteSwipe }) => {
   const [translateX, setTranslateX] = useState(0);
   const startX = useRef(null);
   const currentX = useRef(null);
   const isDragging = useRef(false);
+
+  const pnl = customer.totalPnl || 0;
+  const isPositive = pnl > 0;
+  const isNegative = pnl < 0;
 
   const startDrag = (clientX) => {
     startX.current = clientX;
@@ -74,9 +85,11 @@ const CustomerCard = ({ customer, onClick, onDeleteSwipe }) => {
           </span>
         </div>
         <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-800 relative z-10">
-          <span className="text-slate-500 text-[11px] uppercase tracking-wider font-bold">Holdings</span>
-          <span className={`font-mono ${customer.holdings === '$0.00' ? 'text-slate-500' : 'text-blue-400'}`}>
-            {customer.holdings || '$0.00'}
+          <span className="text-slate-500 text-[11px] uppercase tracking-wider font-bold">TOTAL P&L</span>
+          <span className={`font-mono text-xs font-bold ${
+            isPositive ? 'text-emerald-400' : isNegative ? 'text-rose-400' : 'text-slate-500'
+          }`}>
+            {pnl !== 0 ? (isPositive ? '+' : '') + formatCurrency(pnl) : '₹0.00'}
           </span>
         </div>
       </div>
@@ -96,8 +109,44 @@ const Dashboard = () => {
   const [customerToDelete, setCustomerToDelete] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const settingsRef = useRef(null);
   
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      setIsDarkMode(false);
+      document.documentElement.classList.remove('dark');
+    } else {
+      setIsDarkMode(true);
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newMode = !isDarkMode;
+    setIsDarkMode(newMode);
+    if (newMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (settingsRef.current && !settingsRef.current.contains(e.target)) {
+        setIsSettingsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const userInfo = localStorage.getItem('userInfo');
@@ -283,9 +332,56 @@ const Dashboard = () => {
           <button onClick={() => navigate('/account-opening')} className="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
             <span className="material-symbols-outlined text-[18px]">description</span> Form
           </button>
-          <button onClick={handleLogout} className="text-slate-400 p-2 rounded hover:bg-slate-800 hover:text-red-400 transition-colors" title="Logout">
-            <span className="material-symbols-outlined text-[24px]">logout</span>
-          </button>
+          {/* Settings Menu Dropdown */}
+          <div className="relative" ref={settingsRef}>
+            <button 
+              onClick={() => setIsSettingsOpen(!isSettingsOpen)} 
+              className="text-slate-400 p-2 rounded-lg hover:bg-slate-800 hover:text-slate-200 transition-colors flex items-center justify-center border border-slate-700/50 bg-slate-900" 
+              title="Settings"
+            >
+              <span className="material-symbols-outlined text-[22px]">settings</span>
+            </button>
+
+            {isSettingsOpen && (
+              <div className="absolute right-0 mt-2 w-52 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl py-2 z-[120] animate-in fade-in zoom-in-95 duration-150">
+                {/* 1. Light or Dark Mode */}
+                <button 
+                  onClick={toggleTheme} 
+                  className="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-200 hover:bg-slate-800 flex items-center justify-between transition-colors"
+                >
+                  <span className="flex items-center gap-2.5">
+                    <span className="material-symbols-outlined text-[20px] text-blue-400">
+                      {isDarkMode ? 'dark_mode' : 'light_mode'}
+                    </span>
+                    {isDarkMode ? 'Dark Mode' : 'Light Mode'}
+                  </span>
+                  <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded bg-slate-800 border border-slate-700 text-slate-400">
+                    {isDarkMode ? 'ON' : 'OFF'}
+                  </span>
+                </button>
+
+                {/* 2. Calculator */}
+                <button 
+                  onClick={() => { setIsSettingsOpen(false); setIsAvgCalcOpen(true); }} 
+                  className="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-200 hover:bg-slate-800 flex items-center gap-2.5 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[20px] text-emerald-400">calculate</span>
+                  Calculator
+                </button>
+
+                <div className="border-t border-slate-800 my-1"></div>
+
+                {/* 3. Logout */}
+                <button 
+                  onClick={handleLogout} 
+                  className="w-full px-4 py-2.5 text-left text-sm font-medium text-rose-400 hover:bg-rose-500/10 flex items-center gap-2.5 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[20px]">logout</span>
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 

@@ -114,6 +114,7 @@ export default function MarginReceipt() {
     const [quantity, setQuantity] = useState('');
     const [marginAmount, setMarginAmount] = useState('');
     const [paymentMode, setPaymentMode] = useState('UPI');
+    const [status, setStatus] = useState('Received');
     const [purpose, setPurpose] = useState('Margin amount received from the client for holding the trade. This margin will remain blocked until the trade is exited.');
     const [amountInWords, setAmountInWords] = useState('');
 
@@ -218,9 +219,10 @@ export default function MarginReceipt() {
             pdf.text(`Receipt No. :  ${receiptNo}`, 40, cursorY);
             
             const dateObj = new Date(receiptDate);
+            const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             const formattedDate = isNaN(dateObj.getTime()) 
                 ? receiptDate 
-                : `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
+                : `${dateObj.getDate().toString().padStart(2, '0')}-${shortMonths[dateObj.getMonth()]}-${dateObj.getFullYear()}`;
             pdf.text(`Date :  ${formattedDate}`, pageW - 40, cursorY, { align: 'right' });
 
             cursorY += 8;
@@ -275,12 +277,12 @@ export default function MarginReceipt() {
 
             const gridY = cursorY + 24;
             const gridRowH = 20;
-            const gridH = gridRowH * 5;
+            const gridH = gridRowH * 6;
             pdf.setDrawColor(226, 232, 240);
             pdf.rect(40, gridY, pageW - 80, gridH, 'D');
 
             // Draw horizontal lines in table
-            for (let i = 1; i < 5; i++) {
+            for (let i = 1; i < 6; i++) {
                 pdf.line(40, gridY + i * gridRowH, pageW - 40, gridY + i * gridRowH);
             }
             // Draw vertical column divider
@@ -293,6 +295,7 @@ export default function MarginReceipt() {
             pdf.text("Quantity", 50, gridY + 53);
             pdf.text("Margin Amount Received", 50, gridY + 73);
             pdf.text("Payment Mode", 50, gridY + 93);
+            pdf.text("Status", 50, gridY + 113);
 
             pdf.setTextColor(15, 23, 42);
             pdf.text(":", 150, gridY + 13);
@@ -300,6 +303,7 @@ export default function MarginReceipt() {
             pdf.text(":", 150, gridY + 53);
             pdf.text(":", 150, gridY + 73);
             pdf.text(":", 150, gridY + 93);
+            pdf.text(":", 150, gridY + 113);
 
             pdf.setFont(activeFont, 'bold');
             pdf.text(stockName || 'N/A', 170, gridY + 13);
@@ -308,6 +312,8 @@ export default function MarginReceipt() {
             pdf.text(`Rs. ${formatIndianCurrency(marginAmount)}`, 170, gridY + 73);
             pdf.setFont(activeFont, 'normal');
             pdf.text(paymentMode, 170, gridY + 93);
+            pdf.setFont(activeFont, 'bold');
+            pdf.text(status, 170, gridY + 113);
 
             cursorY = gridY + gridH + 15;
 
@@ -529,6 +535,19 @@ export default function MarginReceipt() {
                                         <option value="Cash">Cash</option>
                                     </select>
                                 </div>
+
+                                <div>
+                                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Status</label>
+                                    <select
+                                        value={status}
+                                        onChange={(e) => setStatus(e.target.value)}
+                                        className="w-full bg-black border border-black rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-black outline-none text-sm font-semibold appearance-none cursor-pointer"
+                                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+                                    >
+                                        <option value="Received">Received</option>
+                                        <option value="Pending">Pending</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
 
@@ -556,9 +575,10 @@ export default function MarginReceipt() {
     }
 
     const dateObj = new Date(receiptDate);
+    const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     const displayFormattedDate = isNaN(dateObj.getTime()) 
         ? receiptDate 
-        : `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
+        : `${dateObj.getDate().toString().padStart(2, '0')}-${shortMonths[dateObj.getMonth()]}-${dateObj.getFullYear()}`;
 
     return (
         <div className="min-h-screen bg-slate-100 text-black p-8 print:p-0 flex flex-col items-center">
@@ -658,9 +678,13 @@ export default function MarginReceipt() {
                                         <td className="px-3 py-2 bg-slate-50/50 font-bold text-slate-500 uppercase text-[9px]">Margin Amount Received</td>
                                         <td className="px-3 py-2 text-slate-900 font-extrabold text-sm">₹ {formatIndianCurrency(marginAmount)}</td>
                                     </tr>
-                                    <tr>
+                                    <tr className="border-b border-slate-200">
                                         <td className="px-3 py-2 bg-slate-50/50 font-bold text-slate-500 uppercase text-[9px]">Payment Mode</td>
                                         <td className="px-3 py-2 text-slate-800">{paymentMode}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="px-3 py-2 bg-slate-50/50 font-bold text-slate-500 uppercase text-[9px]">Status</td>
+                                        <td className="px-3 py-2 text-slate-800 font-bold">{status}</td>
                                     </tr>
                                 </tbody>
                             </table>

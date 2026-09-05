@@ -5,7 +5,7 @@ import { UserCircle2, ShieldCheck, TrendingUp, FileText } from 'lucide-react';
 
 const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
   const receiptRef = useRef(null);
-  const [theme, setTheme] = useState('dark'); // 'dark' or 'light'
+  const [theme, setTheme] = useState(() => document.documentElement.classList.contains('dark') ? 'dark' : 'light');
 
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
@@ -285,7 +285,14 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                   {isEditing ? (
                     <input type="number" className="w-24 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.marginRs} onChange={e => setEditData({ ...editData, marginRs: e.target.value })} />
                   ) : (
-                    <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{formatCurrency(holding.totalMargin || 0)}</span>
+                    <span className={`text-sm font-bold flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                      {(holding.marginPct || (displayInvested > 0 && displayMargin > 0 ? ((displayMargin / displayInvested) * 100).toFixed(2) : null)) && (
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${theme === 'dark' ? 'bg-slate-800 text-slate-400' : 'bg-slate-200 text-slate-600'}`}>
+                          {holding.marginPct ? holding.marginPct : ((displayMargin / displayInvested) * 100).toFixed(2)}%
+                        </span>
+                      )}
+                      {formatCurrency(holding.totalMargin || 0)}
+                    </span>
                   )}
                 </div>
                 <div className={`flex justify-between items-center border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>

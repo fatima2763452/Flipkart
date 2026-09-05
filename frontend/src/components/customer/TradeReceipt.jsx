@@ -5,7 +5,7 @@ import { UserCircle2, ShieldCheck, TrendingUp, FileText } from 'lucide-react';
 
 const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
   const receiptRef = useRef(null);
-  const [theme, setTheme] = useState('dark'); // 'dark' or 'light'
+  const [theme, setTheme] = useState(() => document.documentElement.classList.contains('dark') ? 'dark' : 'light');
   
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({});
@@ -334,10 +334,12 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                       <input type="number" step="any" className="w-24 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.marginRs || editData.marginPct} onChange={e => setEditData({...editData, marginRs: e.target.value})} />
                     ) : (
                       <span className={`text-sm font-bold flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                        {parseFloat(trade.marginPct) > 0 && (
-                          <span className="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">{trade.marginPct}%</span>
+                        {(parseFloat(trade.marginPct) > 0 || (investedAmount > 0 && parseFloat(trade.marginRs || 0) > 0)) && (
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${theme === 'dark' ? 'bg-slate-800 text-slate-400' : 'bg-slate-200 text-slate-600'}`}>
+                            {parseFloat(trade.marginPct) > 0 ? trade.marginPct : ((parseFloat(trade.marginRs) / investedAmount) * 100).toFixed(2)}%
+                          </span>
                         )}
-                        {formatCurrency(trade.marginRs)}
+                        {formatCurrency(trade.marginRs || 0)}
                       </span>
                     )}
                   </div>

@@ -231,9 +231,8 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
           <div 
             key={item._id} 
             onClick={() => setExpandedCard(expandedCard === item._id ? null : item._id)}
-            className={`bg-slate-900/50 border ${idx === 0 ? 'border-blue-500/30' : 'border-slate-800'} rounded-xl p-4 relative overflow-hidden group cursor-pointer hover:bg-slate-900/80 transition-all select-none`}
+            className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 relative overflow-hidden group cursor-pointer hover:bg-slate-900/80 transition-all select-none"
           >
-            {idx === 0 && <div className="absolute inset-0 border border-dashed border-blue-500/20 rounded-xl pointer-events-none"></div>}
             
             <div className="flex justify-between items-start mb-3">
               <div className="flex items-start gap-3">
@@ -285,7 +284,7 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
                 <div className="font-mono text-xs font-semibold text-blue-400">{formatCurrency(item.estimatedTotal)}</div>
               </div>
               <div className="text-right">
-                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">TOTAL P/L</div>
+                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">P/L</div>
                 <div className={`font-mono text-xs font-bold ${getCalculatedRealizedPnl(item) >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {getCalculatedRealizedPnl(item) >= 0 ? '+' : ''}{formatCurrency(getCalculatedRealizedPnl(item))}
                   <span className="block sm:inline-block sm:ml-1 text-[10px] font-semibold opacity-95">

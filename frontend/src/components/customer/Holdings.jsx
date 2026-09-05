@@ -96,16 +96,18 @@ const Holdings = ({ customer, onEditRequest }) => {
       {/* Sticky Top Section */}
       <div className="sticky top-[-16px] pt-4 bg-slate-950 z-20 pb-2 mb-2">
         {/* Total Equity Card */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 relative overflow-hidden">
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 relative overflow-hidden">
           {/* Faint wallet icon in background */}
           <span className="material-symbols-outlined absolute right-[-10px] top-4 text-[80px] text-slate-800/30 rotate-[-10deg] pointer-events-none">account_balance_wallet</span>
 
           <div className="relative z-10">
             <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Equity (INR)</h3>
-            <div className="text-3xl font-bold text-white mb-3 tracking-tight">{formatCurrency(totalEquity)}</div>
+            <div className={`text-3xl font-bold mb-2 tracking-tight ${totalUpnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              {formatCurrency(totalEquity)}
+            </div>
             <div className="flex items-center gap-2">
-              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${totalUpnl >= 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
-                <span className="material-symbols-outlined text-[12px]">{totalUpnl >= 0 ? 'trending_up' : 'trending_down'}</span>
+              <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-bold border ${totalUpnl >= 0 ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30' : 'bg-rose-500/15 text-rose-400 border-rose-500/30'}`}>
+                <span className="material-symbols-outlined text-[14px]">{totalUpnl >= 0 ? 'trending_up' : 'trending_down'}</span>
                 {totalUpnl >= 0 ? '+' : ''}{formatCurrency(totalUpnl)} ({totalUpnl >= 0 ? '+' : ''}{totalUpnlPct.toFixed(2)}%)
               </span>
             </div>
@@ -161,26 +163,25 @@ const Holdings = ({ customer, onEditRequest }) => {
       </div>
 
       {/* Holdings List */}
-      <div className="space-y-3 pb-4">
+      <div className="space-y-1 pb-4">
         {isLoading ? (
           // Skeleton Loader
           [1, 2, 3].map((i) => (
-            <div key={i} className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 relative overflow-hidden">
-              <div className="flex justify-between items-start mb-3">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <div className="w-16 h-5 bg-slate-800 rounded animate-pulse"></div>
-                  <div className="w-8 h-4 bg-slate-800 rounded animate-pulse"></div>
-                </div>
-                <div className="text-right flex flex-col items-end">
-                  <div className="w-16 h-5 bg-slate-800 rounded animate-pulse mb-1"></div>
-                  <div className="w-24 h-3 bg-slate-800 rounded animate-pulse"></div>
-                </div>
-              </div>
-              <div className="grid grid-cols-[0.7fr_1.2fr_1.7fr] gap-2 pt-3 border-t border-slate-800">
+            <div key={i} className="-mx-4 bg-slate-950 border-y border-slate-800 rounded-none px-4 py-2.5 relative overflow-hidden">
+              <div className="flex justify-between items-start mb-2">
                 <div>
-                  <div className="w-8 h-2 bg-slate-800 rounded animate-pulse mb-1"></div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-16 h-4 bg-slate-800 rounded animate-pulse"></div>
+                    <div className="w-8 h-3.5 bg-slate-800 rounded animate-pulse"></div>
+                  </div>
                   <div className="w-12 h-3 bg-slate-800 rounded animate-pulse"></div>
                 </div>
+                <div className="text-right flex flex-col items-end">
+                  <div className="w-16 h-4 bg-slate-800 rounded animate-pulse mb-1"></div>
+                  <div className="w-20 h-3 bg-slate-800 rounded animate-pulse"></div>
+                </div>
+              </div>
+              <div className="flex justify-between items-center pt-2">
                 <div>
                   <div className="w-12 h-2 bg-slate-800 rounded animate-pulse mb-1"></div>
                   <div className="w-16 h-3 bg-slate-800 rounded animate-pulse"></div>
@@ -204,14 +205,13 @@ const Holdings = ({ customer, onEditRequest }) => {
           <div
             key={item.symbol}
             onClick={() => setExpandedCard(expandedCard === item.symbol ? null : item.symbol)}
-            className={`bg-slate-900/50 border ${idx === 0 ? 'border-blue-500/30' : 'border-slate-800'} rounded-xl p-4 relative overflow-hidden group cursor-pointer hover:bg-slate-900/80 transition-all select-none`}
+            className="-mx-4 bg-slate-950 border-y border-slate-800 rounded-none px-4 py-2.5 relative overflow-hidden group cursor-pointer hover:bg-slate-900/40 transition-all select-none"
           >
-            {idx === 0 && <div className="absolute inset-0 border border-dashed border-blue-500/20 rounded-xl pointer-events-none"></div>}
 
-            <div className="flex justify-between items-start mb-3">
-              <div className="flex items-start gap-3">
+            <div className="flex justify-between items-start mb-1.5">
+              <div className="flex items-start gap-2.5">
                 {isSelectionMode && (
-                  <div className="pt-1" onClick={(e) => e.stopPropagation()}>
+                  <div className="pt-0.5" onClick={(e) => e.stopPropagation()}>
                     <input
                       type="checkbox"
                       checked={selectedSymbols.includes(item.symbol)}
@@ -236,6 +236,9 @@ const Holdings = ({ customer, onEditRequest }) => {
                       </span>
                     )}
                   </div>
+                  <div className="text-[10px] text-slate-400 font-medium">
+                    QTY: <span className="font-mono text-slate-200 font-semibold">{item.netQty.toLocaleString()}</span>
+                  </div>
                 </div>
               </div>
               <div className="text-right">
@@ -243,17 +246,14 @@ const Holdings = ({ customer, onEditRequest }) => {
                 <div className="text-[10px] text-slate-400">Avg: <span className="text-slate-300">{formatCurrency(item.avgCost)}</span></div>
               </div>
             </div>
-            <div className="grid grid-cols-[0.7fr_1.2fr_1.7fr] gap-2 pt-3 border-t border-slate-800">
-              <div>
-                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">QTY</div>
-                <div className="font-mono text-xs font-semibold text-slate-200">{item.netQty.toLocaleString()}</div>
-              </div>
+
+            <div className="flex justify-between items-center mt-1">
               <div>
                 <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Total Value</div>
                 <div className="font-mono text-xs font-semibold text-blue-400">{formatCurrency(item.totalValue)}</div>
               </div>
               <div className="text-right">
-                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">TOTAL P/L</div>
+                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">P/L</div>
                 <div className={`font-mono text-xs font-bold ${item.upnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                   {item.upnl >= 0 ? '+' : ''}{formatCurrency(item.upnl)}
                   <span className="block sm:inline-block sm:ml-1 text-[10px] font-semibold opacity-95">
@@ -264,19 +264,19 @@ const Holdings = ({ customer, onEditRequest }) => {
             </div>
 
             {/* Smoothly Expandable Action Panel */}
-            <div className={`grid transition-all duration-300 ease-in-out ${expandedCard === item.symbol ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
+            <div className={`grid transition-all duration-300 ease-in-out ${expandedCard === item.symbol ? 'grid-rows-[1fr] opacity-100 mt-2.5' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
               <div className="overflow-hidden">
-                <div className="flex gap-2 pt-3 border-t border-slate-800/80">
+                <div className="flex gap-2 pt-2 border-t border-slate-800/80">
                   <button
                     onClick={(e) => { e.stopPropagation(); setSelectedReceipt(item); }}
-                    className="flex-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-colors text-xs font-bold"
+                    className="flex-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-colors text-xs font-bold"
                   >
                     <span className="material-symbols-outlined text-[16px]">receipt_long</span>
                     RECEIPT
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); handleDelete(item.symbol); }}
-                    className="flex-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-colors text-xs font-bold"
+                    className="flex-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-colors text-xs font-bold"
                   >
                     <span className="material-symbols-outlined text-[16px]">delete</span>
                     DELETE

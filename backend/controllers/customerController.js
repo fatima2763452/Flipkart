@@ -30,6 +30,64 @@ const createCustomer = async (req, res) => {
   }
 };
 
+const getCustomerPnlHelper = async (mongoId) => {
+  try {
+    const entries = await Entry.find({ customerId: mongoId }).lean();
+    const exits = await Exit.find({ customerId: mongoId }).lean();
+
+    const holdingsMap = {};
+    entries.forEach(trade => {
+      if (!holdingsMap[trade.symbol]) {
+        holdingsMap[trade.symbol] = {
+          symbol: trade.symbol,
+          totalBuyQty: 0,
+          totalBuyCost: 0,
+          totalSellQty: 0,
+          totalSellCost: 0,
+          totalBrokerage: 0,
+          lastPrice: 0
+        };
+      }
+      const h = holdingsMap[trade.symbol];
+      h.lastPrice = trade.ltp || trade.price;
+      if (trade.customUpnl !== undefined) h.customUpnl = trade.customUpnl;
+      h.totalBrokerage += (trade.brokerageFee || 0);
+
+      if (trade.action === 'buy') {
+        h.totalBuyQty += trade.quantity;
+        h.totalBuyCost += (trade.quantity * trade.price);
+      } else if (trade.action === 'sell') {
+        h.totalSellQty += trade.quantity;
+        h.totalSellCost += (trade.quantity * trade.price);
+      }
+    });
+
+    let totalHoldingsPnl = 0;
+    Object.values(holdingsMap).forEach(h => {
+      const netQty = h.totalBuyQty - h.totalSellQty;
+      if (Math.abs(netQty) < 0.0001) return;
+      const absoluteQty = Math.abs(netQty);
+      const isBuy = netQty > 0;
+      const avgCost = isBuy ? (h.totalBuyQty > 0 ? h.totalBuyCost / h.totalBuyQty : 0) : (h.totalSellQty > 0 ? h.totalSellCost / h.totalSellQty : 0);
+
+      let upnl = 0;
+      if (isBuy) {
+        upnl = (h.lastPrice - avgCost) * absoluteQty;
+      } else {
+        upnl = (avgCost - h.lastPrice) * absoluteQty;
+      }
+      upnl -= h.totalBrokerage;
+      totalHoldingsPnl += (h.customUpnl !== undefined ? h.customUpnl : upnl);
+    });
+
+    const totalRealizedPnl = exits.reduce((sum, exit) => sum + (exit.realizedPnl || 0), 0);
+    return totalHoldingsPnl + totalRealizedPnl;
+  } catch (err) {
+    console.error('Error calculating customer PnL:', err);
+    return 0;
+  }
+};
+
 const getCustomers = async (req, res) => {
   try {
     const { ownerId } = req.query;
@@ -39,7 +97,16 @@ const getCustomers = async (req, res) => {
 
     // Only get active (not soft-deleted) customers
     const customers = await Customer.find({ ownerId, isDeleted: { $ne: true } }).sort({ createdAt: -1 });
-    res.json(customers);
+
+    const customersWithPnl = await Promise.all(
+      customers.map(async (cust) => {
+        const custObj = cust.toObject();
+        custObj.totalPnl = await getCustomerPnlHelper(cust._id.toString());
+        return custObj;
+      })
+    );
+
+    res.json(customersWithPnl);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -92,7 +159,7 @@ const restoreCustomer = async (req, res) => {
 const permanentDeleteCustomer = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     // 1. Find the customer first to get their customerId string
     const customer = await Customer.findById(id);
     if (!customer) {

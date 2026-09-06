@@ -409,13 +409,13 @@ export default function MarginReceipt() {
 
     if (!generated) {
         return (
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-4 flex flex-col items-center pt-20">
-                <div className="w-full max-w-lg bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
+            <div className="min-h-screen bg-slate-50 dark:bg-black p-4 flex flex-col items-center pt-20">
+                <div className="w-full max-w-lg bg-white dark:bg-slate-950 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 p-6">
                     <div className="flex items-center gap-4 mb-6">
-                        <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full dark:text-white transition-colors">
+                        <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-full text-slate-700 dark:text-white transition-colors">
                             <ArrowLeft className="w-5 h-5" />
                         </button>
-                        <h1 className="text-xl font-bold dark:text-white">Create Margin Receipt</h1>
+                        <h1 className="text-xl font-bold text-slate-900 dark:text-white">Create Margin Receipt</h1>
                     </div>
 
                     <div className="space-y-4">

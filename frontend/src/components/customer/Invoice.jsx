@@ -570,51 +570,51 @@ export default function Invoice() {
     // If not generated, show form
     if (!generated) {
         return (
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-900 p-4 flex flex-col items-center pt-20">
-                <div className="w-full max-w-md bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 p-6">
+            <div className="min-h-screen bg-slate-50 dark:bg-black p-4 flex flex-col items-center pt-20">
+                <div className="w-full max-w-md bg-white dark:bg-slate-950 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 p-6">
                     <div className="flex items-center gap-4 mb-6">
-                        <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full dark:text-white">
+                        <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-full text-slate-700 dark:text-white transition-colors">
                             <ArrowLeft className="w-5 h-5" />
                         </button>
-                        <h1 className="text-xl font-bold dark:text-white">Generate Tax Statement</h1>
+                        <h1 className="text-xl font-bold text-slate-900 dark:text-white">Generate Tax Statement</h1>
                     </div>
 
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Start Date</label>
+                            <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Start Date</label>
                             <div className="relative">
                                 <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
                                 <input
                                     type="date"
                                     value={startDate}
                                     onChange={(e) => setStartDate(e.target.value)}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 pl-10 pr-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg py-2 pl-10 pr-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
                                 />
                             </div>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">End Date</label>
+                            <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">End Date</label>
                             <div className="relative">
                                 <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
                                 <input
                                     type="date"
                                     value={endDate}
                                     onChange={(e) => setEndDate(e.target.value)}
-                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 pl-10 pr-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg py-2 pl-10 pr-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
                                 />
                             </div>
                         </div>
 
                         {/* Margin Input */}
                         <div>
-                            <label className="block text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Margin Used ( ₹ )</label>
+                            <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1">Margin Used ( ₹ )</label>
                             <input
                                 type="number"
                                 value={margin}
                                 onChange={(e) => setMargin(e.target.value)}
                                 placeholder="Enter Margin Amount"
-                                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg py-2 px-4 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none"
                             />
                         </div>
 
@@ -639,8 +639,6 @@ export default function Invoice() {
                         >
                             {loading ? 'Loading Data...' : 'Generate Statement'}
                         </button>
-
-                       
                     </div>
                 </div>
             </div>

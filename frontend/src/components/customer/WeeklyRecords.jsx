@@ -100,34 +100,32 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
       {/* Sticky Top Section */}
       <div className="sticky top-[-16px] pt-4 bg-slate-950 z-20 pb-2 mb-2">
         {/* Total Realised P/L Card */}
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 relative overflow-hidden">
-          {/* Faint history icon in background */}
-          <span className="material-symbols-outlined absolute right-[-10px] top-4 text-[80px] text-slate-800/30 rotate-[-10deg] pointer-events-none">history</span>
-          
-          <div className="relative z-10 flex justify-between items-start">
-            <div>
-              <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Realised P/L (INR)</h3>
-              <div className="text-3xl font-bold text-white mb-3 tracking-tight">{formatCurrency(totalRealisedPnl)}</div>
-              <div className="flex items-center gap-2">
-                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold ${totalRealisedPnl >= 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}`}>
-                  <span className="material-symbols-outlined text-[12px]">{totalRealisedPnl >= 0 ? 'trending_up' : 'trending_down'}</span>
-                  {totalRealisedPnl >= 0 ? '+' : ''}{formatCurrency(totalRealisedPnl)} ({totalRealisedPnl >= 0 ? '+' : ''}{totalPnlPct.toFixed(2)}%)
-                </span>
-                <span className="text-xs text-slate-500 font-medium ml-2">{exits.length} Trades</span>
-              </div>
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 relative overflow-hidden">
+          <div className="relative z-10">
+            <div className="flex justify-between items-center mb-1">
+              <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Total Realised P/L</h3>
+              <span className="text-xs text-slate-500 font-medium">{exits.length} Trades</span>
             </div>
 
-            <div className="flex flex-col gap-2 items-stretch min-w-[130px]">
+            <div className={`text-2xl sm:text-3xl font-bold mb-3 tracking-tight ${totalRealisedPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              {totalRealisedPnl >= 0 ? '+' : ''}{formatCurrency(totalRealisedPnl)}
+              <span className="text-sm sm:text-base font-semibold ml-2 opacity-95">
+                ({totalRealisedPnl >= 0 ? '+' : ''}{totalPnlPct.toFixed(2)}%)
+              </span>
+            </div>
+
+            {/* Horizontal Buttons Below */}
+            <div className="flex gap-2.5 pt-3 border-t border-slate-800">
               <button 
                 onClick={() => navigate(`/customer/${customer._id}/invoice`)}
-                className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1 shadow-lg shadow-blue-900/20"
+                className="flex-1 bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-lg shadow-blue-900/20"
               >
                 <span className="material-symbols-outlined text-[16px]">receipt_long</span>
                 STATEMENT
               </button>
               <button 
                 onClick={() => navigate(`/customer/${customer._id}/margin-receipt`)}
-                className="bg-[#00B050] hover:bg-[#009040] text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1 shadow-lg shadow-emerald-950/20"
+                className="flex-1 bg-[#00B050] hover:bg-[#009040] text-white px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-950/20"
               >
                 <span className="material-symbols-outlined text-[16px]">payments</span>
                 MARGIN RECEIPT
@@ -179,48 +177,41 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
             )}
           </div>
         </div>
-        
-        {/* Fading bottom edge for sticky header */}
-        <div className="absolute bottom-[-16px] left-0 w-full h-4 bg-gradient-to-b from-slate-950 to-transparent pointer-events-none"></div>
       </div>
 
       {/* Exits List */}
-      <div className="space-y-3 pb-4">
+      <div className="space-y-1 pb-4">
         {isLoading ? (
           // Skeleton Loader
           [1, 2, 3].map((i) => (
-            <div key={i} className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 relative overflow-hidden">
-              <div className="flex justify-between items-start mb-3">
+            <div key={i} className="-mx-4 bg-slate-950 border-y border-slate-800 rounded-none px-4 py-2.5 relative overflow-hidden">
+              <div className="flex justify-between items-start mb-2">
                 <div>
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <div className="w-16 h-5 bg-slate-800 rounded animate-pulse"></div>
-                    <div className="w-8 h-4 bg-slate-800 rounded animate-pulse"></div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-16 h-4 bg-slate-800 rounded animate-pulse"></div>
+                    <div className="w-8 h-3.5 bg-slate-800 rounded animate-pulse"></div>
                   </div>
-                  <div className="w-20 h-3 bg-slate-800 rounded mt-2 animate-pulse"></div>
+                  <div className="w-12 h-3 bg-slate-800 rounded animate-pulse"></div>
                 </div>
                 <div className="text-right flex flex-col items-end">
-                  <div className="w-16 h-5 bg-slate-800 rounded animate-pulse mb-1"></div>
-                  <div className="w-24 h-3 bg-slate-800 rounded animate-pulse"></div>
+                  <div className="w-16 h-4 bg-slate-800 rounded animate-pulse mb-1"></div>
+                  <div className="w-20 h-3 bg-slate-800 rounded animate-pulse"></div>
                 </div>
               </div>
-              <div className="grid grid-cols-[0.7fr_1.2fr_1.7fr] gap-2 pt-3 border-t border-slate-800">
+              <div className="flex justify-between items-center pt-2">
                 <div>
-                   <div className="w-8 h-2 bg-slate-800 rounded animate-pulse mb-1"></div>
-                   <div className="w-12 h-3 bg-slate-800 rounded animate-pulse"></div>
-                </div>
-                <div>
-                   <div className="w-12 h-2 bg-slate-800 rounded animate-pulse mb-1"></div>
-                   <div className="w-16 h-3 bg-slate-800 rounded animate-pulse"></div>
+                  <div className="w-12 h-2 bg-slate-800 rounded animate-pulse mb-1"></div>
+                  <div className="w-16 h-3 bg-slate-800 rounded animate-pulse"></div>
                 </div>
                 <div className="flex flex-col items-end">
-                   <div className="w-12 h-2 bg-slate-800 rounded animate-pulse mb-1"></div>
-                   <div className="w-16 h-3 bg-slate-800 rounded animate-pulse"></div>
+                  <div className="w-12 h-2 bg-slate-800 rounded animate-pulse mb-1"></div>
+                  <div className="w-16 h-3 bg-slate-800 rounded animate-pulse"></div>
                 </div>
               </div>
             </div>
           ))
         ) : !error && exits.length === 0 && (
-          <div className="text-center py-10 text-slate-500 border border-dashed border-slate-800 rounded-xl">
+          <div className="text-center py-12 flex flex-col items-center justify-center border border-dashed border-slate-800 rounded-xl bg-slate-900/30">
             <span className="material-symbols-outlined text-4xl mb-2 text-slate-700">history</span>
             <p>No past trades found.</p>
             <p className="text-xs text-slate-600 mt-1">Submit an Exit Order to see history.</p>
@@ -231,13 +222,13 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
           <div 
             key={item._id} 
             onClick={() => setExpandedCard(expandedCard === item._id ? null : item._id)}
-            className="bg-slate-900/50 border border-slate-800 rounded-xl p-4 relative overflow-hidden group cursor-pointer hover:bg-slate-900/80 transition-all select-none"
+            className="-mx-4 bg-slate-950 border-y border-slate-800 rounded-none px-4 py-2.5 relative overflow-hidden group cursor-pointer transition-all select-none"
           >
             
-            <div className="flex justify-between items-start mb-3">
-              <div className="flex items-start gap-3">
+            <div className="flex justify-between items-start mb-1.5">
+              <div className="flex items-start gap-2.5">
                 {isSelectionMode && (
-                  <div className="pt-1" onClick={(e) => e.stopPropagation()}>
+                  <div className="pt-0.5" onClick={(e) => e.stopPropagation()}>
                     <input 
                       type="checkbox" 
                       checked={selectedIds.includes(item._id)}
@@ -264,9 +255,9 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
                       </span>
                     )}
                   </div>
-                  <div className="text-[10px] text-slate-400 mt-1">
-                    {new Date(item.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' })}
-                  </div>
+                  <div className="text-[10px] text-slate-400 font-medium flex items-center gap-2">
+                    <span>QTY: <span className="font-mono text-slate-200 font-semibold">{item.quantity.toLocaleString()}</span></span>
+                     </div>
                 </div>
               </div>
               <div className="text-right">
@@ -274,11 +265,8 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
                 <div className="text-[10px] text-slate-400">LTP: <span className="text-slate-300">{formatCurrency(item.ltp)}</span></div>
               </div>
             </div>
-            <div className="grid grid-cols-[0.7fr_1.2fr_1.7fr] gap-2 pt-3 border-t border-slate-800">
-              <div>
-                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">QTY</div>
-                <div className="font-mono text-xs font-semibold text-slate-200">{item.quantity.toLocaleString()}</div>
-              </div>
+
+            <div className="flex justify-between items-center mt-1">
               <div>
                 <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Total Value</div>
                 <div className="font-mono text-xs font-semibold text-blue-400">{formatCurrency(item.estimatedTotal)}</div>
@@ -295,19 +283,19 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
             </div>
 
             {/* Smoothly Expandable Action Panel */}
-            <div className={`grid transition-all duration-300 ease-in-out ${expandedCard === item._id ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
+            <div className={`grid transition-all duration-300 ease-in-out ${expandedCard === item._id ? 'grid-rows-[1fr] opacity-100 mt-2.5' : 'grid-rows-[0fr] opacity-0 mt-0'}`}>
               <div className="overflow-hidden">
-                <div className="flex gap-2 pt-3 border-t border-slate-800/80">
+                <div className="flex gap-2 pt-2 border-t border-slate-800/80">
                   <button 
                     onClick={(e) => { e.stopPropagation(); setSelectedReceipt(item); }}
-                    className="flex-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-colors text-xs font-bold"
+                    className="flex-1 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-colors text-xs font-bold"
                   >
                     <span className="material-symbols-outlined text-[16px]">receipt_long</span>
                     RECEIPT
                   </button>
                   <button 
                     onClick={(e) => { e.stopPropagation(); handleDelete(item._id); }}
-                    className="flex-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 py-2.5 rounded-lg flex items-center justify-center gap-1.5 transition-colors text-xs font-bold"
+                    className="flex-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 py-2 rounded-lg flex items-center justify-center gap-1.5 transition-colors text-xs font-bold"
                   >
                     <span className="material-symbols-outlined text-[16px]">delete</span>
                     DELETE

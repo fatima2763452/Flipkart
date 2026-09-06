@@ -97,12 +97,9 @@ const Holdings = ({ customer, onEditRequest }) => {
       <div className="sticky top-[-16px] pt-4 bg-slate-950 z-20 pb-2 mb-2">
         {/* Total Equity Card */}
         <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 relative overflow-hidden">
-          {/* Faint wallet icon in background */}
-          <span className="material-symbols-outlined absolute right-[-10px] top-4 text-[80px] text-slate-800/30 rotate-[-10deg] pointer-events-none">account_balance_wallet</span>
-
           <div className="relative z-10">
-            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Equity (INR)</h3>
-            <div className={`text-3xl font-bold mb-2 tracking-tight ${totalUpnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+            <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Total Equity</h3>
+            <div className={`text-3xl font-bold mb-2 tracking-tight`}>
               {formatCurrency(totalEquity)}
             </div>
             <div className="flex items-center gap-2">
@@ -157,9 +154,6 @@ const Holdings = ({ customer, onEditRequest }) => {
             )}
           </div>
         </div>
-
-        {/* Fading bottom edge for sticky header */}
-        <div className="absolute bottom-[-16px] left-0 w-full h-4 bg-gradient-to-b from-slate-950 to-transparent pointer-events-none"></div>
       </div>
 
       {/* Holdings List */}
@@ -205,7 +199,7 @@ const Holdings = ({ customer, onEditRequest }) => {
           <div
             key={item.symbol}
             onClick={() => setExpandedCard(expandedCard === item.symbol ? null : item.symbol)}
-            className="-mx-4 bg-slate-950 border-y border-slate-800 rounded-none px-4 py-2.5 relative overflow-hidden group cursor-pointer hover:bg-slate-900/40 transition-all select-none"
+            className="-mx-4 bg-slate-950 border-y border-slate-800 rounded-none px-4 py-2.5 relative overflow-hidden group cursor-pointer transition-all select-none"
           >
 
             <div className="flex justify-between items-start mb-1.5">

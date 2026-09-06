@@ -4,6 +4,10 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+* {
+  -webkit-tap-highlight-color: transparent !important;
+}
+
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal;
@@ -33,6 +37,7 @@ html:not(.dark) body {
 html:not(.dark) .bg-slate-950,
 html:not(.dark) .bg-slate-900 {
   background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
 }
 
 html:not(.dark) .bg-slate-950\/90,
@@ -40,24 +45,33 @@ html:not(.dark) .bg-slate-900\/95,
 html:not(.dark) .bg-slate-900\/90,
 html:not(.dark) .bg-slate-900\/80,
 html:not(.dark) .bg-slate-900\/50,
-html:not(.dark) .bg-slate-900\/40,
 html:not(.dark) .bg-slate-900\/30,
 html:not(.dark) .bg-slate-800\/80 {
   background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+html:not(.dark) .bg-slate-900\/40 {
+  background-color: #f1f5f9 !important;
 }
 
 html:not(.dark) .bg-slate-950\/80 {
-  background-color: rgba(15, 23, 42, 0.4) !important;
+  background-color: rgba(15, 23, 42, 0.05) !important;
 }
 
 html:not(.dark) .bg-slate-800 {
   background-color: #f1f5f9 !important;
 }
 
+html:not(.dark) .bg-slate-800\/40 {
+  background-color: #f8fafc !important;
+  border-color: #2563eb !important;
+}
+
 html:not(.dark) .hover\:bg-slate-800:hover,
 html:not(.dark) .hover\:bg-slate-900\/40:hover,
 html:not(.dark) .hover\:bg-slate-900\/80:hover {
-  background-color: #e2e8f0 !important;
+  background-color: #f1f5f9 !important;
 }
 
 html:not(.dark) .border-slate-800,
@@ -68,9 +82,9 @@ html:not(.dark) .border-slate-800\/80 {
   border-color: #e2e8f0 !important;
 }
 
+/* Typography & Text Colors */
 html:not(.dark) .text-slate-100,
-html:not(.dark) .text-slate-200,
-html:not(.dark) .text-white {
+html:not(.dark) .text-slate-200 {
   color: #0f172a !important;
 }
 
@@ -84,46 +98,115 @@ html:not(.dark) .text-slate-600 {
   color: #64748b !important;
 }
 
+/* Financial Accent Colors for High Contrast on White */
 html:not(.dark) .text-blue-400 {
-  color: #2563eb !important;
+  color: #1d4ed8 !important;
 }
 
 html:not(.dark) .text-emerald-400 {
-  color: #059669 !important;
+  color: #047857 !important;
 }
 
 html:not(.dark) .text-rose-400 {
-  color: #dc2626 !important;
+  color: #b91c1c !important;
 }
 
 html:not(.dark) .text-amber-400 {
-  color: #d97706 !important;
+  color: #b45309 !important;
 }
 
-html:not(.dark) .from-slate-950 {
-  --tw-gradient-from: #ffffff !important;
+html:not(.dark) .text-cyan-400 {
+  color: #0e7490 !important;
 }
 
-html:not(.dark) .to-slate-950 {
-  --tw-gradient-to: #ffffff !important;
+/* Ensure Solid Colored Buttons and Active Badges Retain Crisp White Text */
+html:not(.dark) .bg-blue-600,
+html:not(.dark) .bg-blue-500,
+html:not(.dark) .bg-emerald-500,
+html:not(.dark) .bg-emerald-600,
+html:not(.dark) .bg-\[\#00B050\],
+html:not(.dark) .bg-rose-500,
+html:not(.dark) .bg-cyan-600,
+html:not(.dark) .bg-amber-500 {
+  color: #ffffff !important;
 }
 
-html:not(.dark) .glass-panel {
-  background: rgba(255, 255, 255, 0.9) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.8) !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05) !important;
+html:not(.dark) .bg-blue-600 *,
+html:not(.dark) .bg-blue-500 *,
+html:not(.dark) .bg-emerald-500 *,
+html:not(.dark) .bg-emerald-600 *,
+html:not(.dark) .bg-\[\#00B050\] *,
+html:not(.dark) .bg-rose-500 *,
+html:not(.dark) .bg-cyan-600 *,
+html:not(.dark) .bg-amber-500 * {
+  color: #ffffff !important;
 }
 
-html:not(.dark) input:-webkit-autofill,
-html:not(.dark) input:-webkit-autofill:hover, 
-html:not(.dark) input:-webkit-autofill:focus, 
-html:not(.dark) input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px #ffffff inset !important;
-  -webkit-text-fill-color: #0f172a !important;
+/* Save / Action buttons in form */
+html:not(.dark) .bg-blue-300 {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+}
+html:not(.dark) .bg-blue-300 * {
+  color: #ffffff !important;
+}
+html:not(.dark) .bg-amber-300 {
+  background-color: #d97706 !important;
+  color: #ffffff !important;
+}
+html:not(.dark) .bg-amber-300 * {
+  color: #ffffff !important;
 }
 
+/* Badges in Light Mode */
+html:not(.dark) .bg-emerald-500\/10,
+html:not(.dark) .bg-emerald-500\/15 {
+  background-color: #ecfdf5 !important;
+  border-color: #a7f3d0 !important;
+  color: #047857 !important;
+}
+
+html:not(.dark) .bg-rose-500\/10,
+html:not(.dark) .bg-rose-500\/15 {
+  background-color: #fff1f2 !important;
+  border-color: #fecdd3 !important;
+  color: #b91c1c !important;
+}
+
+html:not(.dark) .bg-amber-500\/10 {
+  background-color: #fffbeb !important;
+  border-color: #fde68a !important;
+  color: #b45309 !important;
+}
+
+html:not(.dark) .bg-cyan-500\/10 {
+  background-color: #ecfeff !important;
+  border-color: #a5f3fc !important;
+  color: #0e7490 !important;
+}
+
+html:not(.dark) .bg-blue-500\/10 {
+  background-color: #eff6ff !important;
+  border-color: #bfdbfe !important;
+  color: #1d4ed8 !important;
+}
+
+/* Action Panel Buttons (Receipt / Delete) in Light Mode */
+html:not(.dark) .bg-blue-500\/10.text-blue-400,
+html:not(.dark) button.bg-blue-500\/10 {
+  background-color: #eff6ff !important;
+  color: #1d4ed8 !important;
+  border: 1px solid #bfdbfe !important;
+}
+
+html:not(.dark) .bg-rose-500\/10.text-rose-400,
+html:not(.dark) button.bg-rose-500\/10 {
+  background-color: #fff1f2 !important;
+  color: #b91c1c !important;
+  border: 1px solid #fecdd3 !important;
+}
+
+/* Form Inputs in Light Mode */
 html:not(.dark) input[type="text"],
 html:not(.dark) input[type="number"],
 html:not(.dark) input[type="date"],
@@ -134,8 +217,33 @@ html:not(.dark) select {
   color-scheme: light !important;
 }
 
+html:not(.dark) input[type="text"]:focus,
+html:not(.dark) input[type="number"]:focus,
+html:not(.dark) input[type="date"]:focus,
+html:not(.dark) select:focus {
+  background-color: #ffffff !important;
+  border-color: #2563eb !important;
+}
+
 html:not(.dark) input::placeholder {
   color: #94a3b8 !important;
+}
+
+/* Gradients in Light Mode */
+html:not(.dark) .from-slate-950 {
+  --tw-gradient-from: #f8fafc !important;
+}
+
+html:not(.dark) .to-slate-950 {
+  --tw-gradient-to: #f8fafc !important;
+}
+
+html:not(.dark) .glass-panel {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* True Professional Pitch-Black Dark Mode Styles when .dark is present */
@@ -198,6 +306,14 @@ html.dark .text-slate-400 {
 html.dark .text-slate-500,
 html.dark .text-slate-600 {
   color: #71717a !important;
+}
+
+html.dark .from-slate-950 {
+  --tw-gradient-from: #000000 !important;
+}
+
+html.dark .to-slate-950 {
+  --tw-gradient-to: #000000 !important;
 }
 
 html.dark .stock-bg {

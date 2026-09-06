@@ -315,20 +315,8 @@ const Dashboard = () => {
       )}
 
       {/* Mobile Header */}
-      <header className="p-4 flex items-center justify-between border-b border-slate-800/60">
-        <div className="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center border border-slate-700/50 text-blue-400 shadow-[0_0_15px_rgba(96,165,250,0.15)]">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <path d="m9 12 2 2 4-4"/>
-          </svg>
-        </div>
+      <header className="p-4 flex items-center justify-end border-b border-slate-800/60">
         <div className="flex gap-3 items-center">
-          <button onClick={() => navigate('/recycle-bin')} className="bg-rose-600/20 text-rose-400 border border-rose-500/30 hover:bg-rose-600/30 px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
-            <span className="material-symbols-outlined text-[18px]">delete</span> 
-          </button>
-          <button onClick={() => setIsAvgCalcOpen(true)} className="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors" title="Average Calculator">
-            <span className="material-symbols-outlined text-[18px]">calculate</span> Calc
-          </button>
           <button onClick={() => navigate('/account-opening')} className="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
             <span className="material-symbols-outlined text-[18px]">description</span> Form
           </button>
@@ -369,9 +357,18 @@ const Dashboard = () => {
                   Calculator
                 </button>
 
+                {/* 3. Recycle Bin / Delete */}
+                <button 
+                  onClick={() => { setIsSettingsOpen(false); navigate('/recycle-bin'); }} 
+                  className="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-200 hover:bg-slate-800 flex items-center gap-2.5 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[20px] text-rose-400">delete</span>
+                  Recycle Bin
+                </button>
+
                 <div className="border-t border-slate-800 my-1"></div>
 
-                {/* 3. Logout */}
+                {/* 4. Logout */}
                 <button 
                   onClick={handleLogout} 
                   className="w-full px-4 py-2.5 text-left text-sm font-medium text-rose-400 hover:bg-rose-500/10 flex items-center gap-2.5 transition-colors"

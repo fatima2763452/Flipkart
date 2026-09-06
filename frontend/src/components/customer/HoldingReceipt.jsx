@@ -79,7 +79,12 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
   };
 
   const handleDownload = async () => {
-    if (!receiptRef.current) return;
+    const element = receiptRef.current;
+    if (!element) return;
+
+    const width = element.offsetWidth || 700;
+    const height = element.offsetHeight || 600;
+
     try {
       const filter = (node) => {
         // Exclude external stylesheets to prevent CORS SecurityError
@@ -89,8 +94,8 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
         return true;
       };
 
-      const dataUrl = await toPng(receiptRef.current, {
-        backgroundColor: theme === 'dark' ? '#0f172a' : '#f8fafc',
+      const dataUrl = await toPng(element, {
+        backgroundColor: theme === 'dark' ? '#000000' : '#f8fafc',
         pixelRatio: 4,
         filter: filter,
         style: {
@@ -102,10 +107,10 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'px',
-        format: [receiptRef.current.offsetWidth, receiptRef.current.offsetHeight]
+        format: [width, height]
       });
 
-      pdf.addImage(dataUrl, 'PNG', 0, 0, receiptRef.current.offsetWidth, receiptRef.current.offsetHeight);
+      pdf.addImage(dataUrl, 'PNG', 0, 0, width, height);
       const today = new Date();
       const formattedDate = `${today.getDate().toString().padStart(2, '0')}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getFullYear().toString().slice(-2)}`;
       const safeCustomerName = (customer.name || 'Customer').replace(/[^a-zA-Z0-9]/g, '_');
@@ -143,7 +148,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
         <div
           ref={receiptRef}
           className={`w-full overflow-hidden transition-colors duration-300 ${theme === 'dark' ? 'dark' : ''} ${theme === 'dark'
-              ? 'bg-[#0f172a] text-slate-200'
+              ? 'bg-black text-slate-200 border border-slate-800'
               : 'bg-[#f8fafc] text-slate-800'
             }`}
           style={{ fontFamily: "'Inter', sans-serif" }}
@@ -183,7 +188,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
               </div>
               <div className="text-right">
                 <div className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>Qty</div>
-                <span className={`text-l font-bold ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`}>{displayQty} {holding.lot || editData.lot ? `(${isEditing ? editData.lot : holding.lot})` : ''}</span>
+                <span className={`text-l font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{displayQty} {holding.lot || editData.lot ? `(${isEditing ? editData.lot : holding.lot})` : ''}</span>
               </div>
             </div>
 
@@ -218,11 +223,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
 
             {/* Holding Details Table */}
             <div className={`rounded-xl border overflow-hidden ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-              <div className={`px-4 py-1.5 text-center ${
-                (isEditing ? editData.tradeCategory : (holding.tradeCategory || 'normal')) === 'delivery' 
-                  ? 'bg-blue-500' 
-                  : 'bg-blue-500'
-              }`}>
+              <div className="px-4 py-1.5 text-center bg-blue-600">
                 <h4 className="text-white text-lg font-bold tracking-wider uppercase">
                   {(isEditing ? editData.tradeCategory : (holding.tradeCategory || 'normal')) === 'delivery' ? 'DELIVERY' : 'NORMAL'}
                 </h4>
@@ -375,7 +376,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
 
           <button
             onClick={handleDownload}
-            className="flex-1 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-500 transition-colors shadow-lg shadow-blue-600/20"
+            className="flex-1 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-bold text-white bg-black hover:bg-slate-900 transition-colors shadow-lg border border-slate-800"
           >
 
             SAVE PDF

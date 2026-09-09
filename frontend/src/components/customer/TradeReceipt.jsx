@@ -31,7 +31,16 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
   const handleSave = async () => {
     if (onEdit) {
       setIsSaving(true);
-      await onEdit(editData);
+      // Ensure numeric fields aren't sent as empty strings
+      const sanitized = {
+        ...editData,
+        quantity: editData.quantity !== '' ? editData.quantity : trade.quantity,
+        price: editData.price !== '' ? editData.price : trade.price,
+        ltp: editData.ltp !== '' ? editData.ltp : trade.ltp,
+        lot: editData.lot !== '' ? editData.lot : (trade.lot || 0),
+        marginRs: editData.marginRs !== '' ? editData.marginRs : (trade.marginRs || 0),
+      };
+      await onEdit(sanitized);
       setIsSaving(false);
       setIsEditing(false);
     }

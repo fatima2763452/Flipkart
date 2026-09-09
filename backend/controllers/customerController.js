@@ -4,7 +4,7 @@ const Exit = require('../models/Exit');
 
 const createCustomer = async (req, res) => {
   try {
-    const { customerId, name, ownerId } = req.body;
+    const { customerId, name, ownerId, mobileLast4 } = req.body;
 
     if (!customerId || !name || !ownerId) {
       return res.status(400).json({ message: 'Please provide customer ID, name, and owner ID' });
@@ -21,7 +21,8 @@ const createCustomer = async (req, res) => {
     const customer = await Customer.create({
       customerId,
       name,
-      ownerId
+      ownerId,
+      mobileLast4: mobileLast4 || ''
     });
 
     res.status(201).json(customer);

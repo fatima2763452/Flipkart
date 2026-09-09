@@ -311,6 +311,18 @@ const AccountOpeningForm = () => {
 
             <div
               style={{
+                marginTop: "16px",
+                color: "#000000",
+                fontSize: "13px",
+                fontWeight: "700",
+                lineHeight: "22px"
+              }}
+            >
+              Congratulations! Your Demat account has been successfully opened with our company.
+            </div>
+
+            <div
+              style={{
                 marginTop: "20px",
                 color: "#000000",
                 fontSize: "13px",
@@ -428,6 +440,9 @@ const AccountOpeningForm = () => {
               <div className="mt-8 pt-4 border-t border-slate-200 text-center">
                 <div className="text-red-600 text-[11px] font-bold leading-normal">
                   <strong>Note:</strong> We are not registered with SEBI. High-leverage trading involves significant financial risk. Please trade at your own risk. The company shall not be responsible for any profit, loss, or financial consequences arising from your trading activities.
+                </div>
+                <div className="mt-3 text-black text-[11px] font-bold leading-normal">
+                  Congratulations! Your Demat account has been successfully opened with our company.
                 </div>
                 <div className="mt-4 text-black text-[11px] font-extrabold tracking-widest">
                   RADHE BROKERAGE PVT. LTD.

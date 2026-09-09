@@ -5,6 +5,12 @@ import TradeReceipt from './TradeReceipt';
 
 const WeeklyRecords = ({ customer, onEditRequest }) => {
   const navigate = useNavigate();
+
+  const formatShortDate = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
+  };
   const [exits, setExits] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -257,6 +263,8 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
                   </div>
                   <div className="text-[10px] text-slate-400 font-medium flex items-center gap-2">
                     <span>QTY: <span className="font-mono text-slate-200 font-semibold">{item.quantity.toLocaleString()}</span></span>
+                    <span className="text-slate-600">•</span>
+                    <span className="text-slate-500">{formatShortDate(item.date || item.createdAt)}</span>
                      </div>
                 </div>
               </div>
@@ -268,7 +276,7 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
 
             <div className="flex justify-between items-center mt-1">
               <div>
-                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Total Value</div>
+                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">invested</div>
                 <div className="font-mono text-xs font-semibold text-blue-400">{formatCurrency(item.estimatedTotal)}</div>
               </div>
               <div className="text-right">
@@ -316,10 +324,17 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
           onClose={() => setSelectedReceipt(null)}
           onEdit={async (updatedData) => {
             try {
+              // Remove empty string keys to avoid overwriting valid data
+              const cleanedData = {};
+              for (const [key, value] of Object.entries(updatedData)) {
+                if (value !== '' && value !== undefined && value !== null) {
+                  cleanedData[key] = value;
+                }
+              }
               // The backend route is /trades/edit/:id
               await api.put(`/trades/edit/${selectedReceipt._id}`, {
                 ...selectedReceipt,
-                ...updatedData,
+                ...cleanedData,
                 type: 'exit'
               });
               fetchExits();

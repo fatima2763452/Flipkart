@@ -339,7 +339,7 @@ const editTrade = async (req, res) => {
     const { id } = req.params;
     const { type, action, symbol, quantity, lot, price, ltp, marginRs, marginPct, date, brokeragePct, brokerageType, brokerageValue, tradeCategory } = req.body;
 
-    if (!id || !type || !action || !symbol || !quantity || !price || !ltp || !date) {
+    if (!id || !type || !action || !symbol || (quantity === undefined || quantity === null || quantity === '') || (price === undefined || price === null || price === '') || (ltp === undefined || ltp === null || ltp === '') || !date) {
       return res.status(400).json({ message: 'Please provide all required fields' });
     }
 

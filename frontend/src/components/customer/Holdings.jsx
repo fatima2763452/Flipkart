@@ -243,7 +243,7 @@ const Holdings = ({ customer, onEditRequest }) => {
 
             <div className="flex justify-between items-center mt-1">
               <div>
-                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Total Value</div>
+                <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">invested</div>
                 <div className="font-mono text-xs font-semibold text-blue-400">{formatCurrency(item.totalValue)}</div>
               </div>
               <div className="text-right">

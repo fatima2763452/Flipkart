@@ -643,7 +643,7 @@ export default function MarginReceipt() {
                                 <div className="flex">
                                     <span className="w-28 text-slate-400">Client ID</span>
                                     <span className="mr-2">:</span>
-                                    <span className="text-slate-900 font-bold">{clientCode}</span>
+                                    <span className="text-slate-900 font-bold font-mono">{clientCode}</span>
                                 </div>
                                 <div className="flex">
                                     <span className="w-28 text-slate-400">Mobile No.</span>

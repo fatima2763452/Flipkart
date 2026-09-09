@@ -81,11 +81,25 @@ const formatPDFProfitLoss = (n) => {
     return `${sign}${absVal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
-// Helper to format date to match frontend UI (e.g. 12-Aug-2026)
+// Helper to format date to match frontend UI (e.g. 09-Sep-2026)
 const formatDDMMM = (dateStr) => {
     if (!dateStr) return '';
     const date = new Date(dateStr);
-    return date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
+    if (isNaN(date.getTime())) return dateStr;
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = monthNames[date.getUTCMonth()];
+    const year = date.getUTCFullYear();
+    return `${day}-${month}-${year}`;
+};
+
+const formatTodayShortMonth = () => {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, '0');
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
 };
 
 export default function Invoice() {
@@ -295,7 +309,7 @@ export default function Invoice() {
             pdf.setFont(activeFont, 'bold');
             pdf.setFontSize(10);
             pdf.setTextColor(...darkText);
-            pdf.text(`${new Date().toLocaleDateString('en-GB')}`, rightX, cursorY + 62, { align: 'right' });
+            pdf.text(`${formatTodayShortMonth()}`, rightX, cursorY + 62, { align: 'right' });
 
             cursorY += 75;
 
@@ -674,8 +688,8 @@ export default function Invoice() {
                         <h2 className="text-lg font-bold text-slate-900">Statement No. {invoiceId}</h2>
                         <div className="mt-2.5 space-y-1">
                             <p className="text-lg font-bold text-slate-900">{clientName}</p>
-                            <p className="text-sm font-bold text-slate-900">{clientCode}</p>
-                            <p className="text-sm font-semibold text-slate-900">{new Date().toLocaleDateString('en-GB')}</p>
+                            <p className="text-sm font-bold text-slate-900 font-mono">{clientCode}</p>
+                            <p className="text-sm font-semibold text-slate-900">{formatTodayShortMonth()}</p>
                         </div>
                     </div>
                 </div>
@@ -694,7 +708,7 @@ export default function Invoice() {
                                 <th className="px-2 py-3.5 text-center w-16">No.</th>
                                 <th className="px-4 py-3.5 text-left">STOCK</th>
                                 <th className="px-4 py-3.5 text-center w-20">MODE</th>
-                                <th className="px-4 py-3.5 text-right">AVG. PRICE</th>
+                                <th className="px-4 py-3.5 text-right">AVG.</th>
                                 <th className="px-4 py-3.5 text-center w-24">QTY</th>
                                 <th className="px-4 py-3.5 text-right">EXIT PRICE</th>
                                 <th className="px-4 py-3.5 text-right">BROKERAGE</th>

@@ -4,6 +4,7 @@ const customerSchema = mongoose.Schema({
   customerId: { type: String, required: true },
   name: { type: String, required: true },
   ownerId: { type: String, required: true },
+  mobileLast4: { type: String, default: '' },
   status: { type: String, default: 'Active' },
   holdings: { type: String, default: '$0.00' },
   isDeleted: { type: Boolean, default: false }

@@ -102,7 +102,7 @@ const Dashboard = () => {
   const [customers, setCustomers] = useState([]);
   const [isAvgCalcOpen, setIsAvgCalcOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newCustomer, setNewCustomer] = useState({ id: '', name: '' });
+  const [newCustomer, setNewCustomer] = useState({ id: '', name: '', mobileLast4: '' });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isListLoading, setIsListLoading] = useState(true);
@@ -186,10 +186,11 @@ const Dashboard = () => {
       await api.post('/customers', {
         customerId: newCustomer.id,
         name: newCustomer.name,
+        mobileLast4: newCustomer.mobileLast4,
         ownerId: user._id
       });
       
-      setNewCustomer({ id: '', name: '' });
+      setNewCustomer({ id: '', name: '', mobileLast4: '' });
       setIsModalOpen(false);
       fetchCustomers(user._id); // Refresh list
     } catch (err) {
@@ -266,6 +267,26 @@ const Dashboard = () => {
                   className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2.5 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-600"
                   placeholder="e.g. Apex Global Funds"
                 />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Mobile Number (Last 4 Digits)</label>
+                <div className="flex w-full bg-slate-950 border border-slate-700 rounded-lg overflow-hidden focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500">
+                  <span className="flex items-center px-3 bg-slate-900 border-r border-slate-700 text-slate-500 font-mono tracking-widest text-sm">XXXXXX</span>
+                  <input 
+                    type="text" 
+                    maxLength={4}
+                    value={newCustomer.mobileLast4}
+                    onChange={e => {
+                      const val = e.target.value.replace(/\D/g, '');
+                      if (val.length <= 4) {
+                        setNewCustomer({...newCustomer, mobileLast4: val});
+                      }
+                    }}
+                    className="w-full bg-transparent px-3 py-2.5 text-sm outline-none font-mono tracking-widest placeholder:text-slate-600"
+                    placeholder="7890"
+                  />
+                </div>
               </div>
               
               <button 

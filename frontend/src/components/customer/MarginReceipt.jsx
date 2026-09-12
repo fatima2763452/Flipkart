@@ -119,32 +119,10 @@ export default function MarginReceipt() {
     const [amountInWords, setAmountInWords] = useState('');
 
     useEffect(() => {
-        const fetchCustomer = async () => {
-            try {
-                const userInfoStr = localStorage.getItem('userInfo');
-                if (!userInfoStr) return;
-                const userInfo = JSON.parse(userInfoStr);
-                const ownerId = userInfo?._id;
-                if (!ownerId) return;
-
-                const res = await api.get(`/customers?ownerId=${ownerId}`);
-                const customer = res.data.find(c => c._id === customerId);
-                if (customer) {
-                    setClientName(customer.name);
-                    setClientCode(customer.customerId);
-                }
-            } catch (err) {
-                console.error("Failed to fetch customer", err);
-            }
-        };
-        
-        fetchCustomer();
-
-        // Prefill default Receipt No and Date
+        // Prefill default Receipt No
         const year = new Date().getFullYear();
         const randNum = Math.floor(1000 + Math.random() * 9000);
         setReceiptNo(`MR-${year}-${randNum}`);
-        setReceiptDate(new Date().toISOString().split('T')[0]);
 
         // Prefill asset caches
         getLogoAsset(logo);
@@ -161,8 +139,8 @@ export default function MarginReceipt() {
     }, [marginAmount]);
 
     const handleGenerate = () => {
-        if (!clientName || !clientCode || !marginAmount) {
-            alert('Please fill out Client Name, ID, and Margin Amount.');
+        if (!clientName || !marginAmount) {
+            alert('Please fill out Client Name and Margin Amount.');
             return;
         }
         setGenerated(true);
@@ -220,8 +198,8 @@ export default function MarginReceipt() {
             
             const dateObj = new Date(receiptDate);
             const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            const formattedDate = isNaN(dateObj.getTime()) 
-                ? receiptDate 
+            const formattedDate = (!receiptDate || isNaN(dateObj.getTime())) 
+                ? (receiptDate || 'N/A') 
                 : `${dateObj.getDate().toString().padStart(2, '0')}-${shortMonths[dateObj.getMonth()]}-${dateObj.getFullYear()}`;
             pdf.text(`Date :  ${formattedDate}`, pageW - 40, cursorY, { align: 'right' });
 
@@ -260,7 +238,7 @@ export default function MarginReceipt() {
 
             pdf.setFont(activeFont, 'bold');
             pdf.text(clientName, 130, clientCardY + 16);
-            pdf.text(clientCode, 130, clientCardY + 30);
+            pdf.text(clientCode || 'N/A', 130, clientCardY + 30);
             pdf.setFont(activeFont, 'normal');
             const displayMobile = mobileNumber ? `XXXXXX${mobileNumber}` : 'N/A';
             pdf.text(displayMobile, 130, clientCardY + 44);
@@ -366,7 +344,7 @@ export default function MarginReceipt() {
             // pdf.setFont(activeFont, 'bold');
             // pdf.text("Received By", centerColX, footerY + 12, { align: 'center' });
             // pdf.setFontSize(7.5);
-            // pdf.text("RADHE BROKERAGE PVT. LTD.", centerColX, footerY + 22, { align: 'center' });
+            // pdf.text("GROW CAPITAL PVT. LTD.", centerColX, footerY + 22, { align: 'center' });
 
             // // Authorized Signatory (Right)
             // const rightColX = pageW - 40 - 60;
@@ -576,8 +554,8 @@ export default function MarginReceipt() {
 
     const dateObj = new Date(receiptDate);
     const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const displayFormattedDate = isNaN(dateObj.getTime()) 
-        ? receiptDate 
+    const displayFormattedDate = (!receiptDate || isNaN(dateObj.getTime())) 
+        ? (receiptDate || 'N/A') 
         : `${dateObj.getDate().toString().padStart(2, '0')}-${shortMonths[dateObj.getMonth()]}-${dateObj.getFullYear()}`;
 
     return (
@@ -605,7 +583,7 @@ export default function MarginReceipt() {
                     {/* Header */}
                     <div className="flex justify-between items-start pb-4">
                         <div>
-                            <img src={logo} alt="Radhe Brokerage Logo" className="h-15 w-auto object-contain" />
+                            <img src={logo} alt="Grow Capital Logo" className="h-15 w-auto object-contain" />
                             <p className="text-[7.5px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1 pl-1">
                                
                             </p>
@@ -643,7 +621,7 @@ export default function MarginReceipt() {
                                 <div className="flex">
                                     <span className="w-28 text-slate-400">Client ID</span>
                                     <span className="mr-2">:</span>
-                                    <span className="text-slate-900 font-bold font-mono">{clientCode}</span>
+                                    <span className="text-slate-900 font-bold font-mono">{clientCode || 'N/A'}</span>
                                 </div>
                                 <div className="flex">
                                     <span className="w-28 text-slate-400">Mobile No.</span>
@@ -721,7 +699,7 @@ export default function MarginReceipt() {
                         {/* Received By and Stamp placeholder */}
                         <div className="flex flex-col items-center justify-center relative w-44 select-none mb-1">
                             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Received By</span>
-                            <span className="text-[10px] font-bold text-slate-900 uppercase">RADHE BROKERAGE PVT. LTD.</span>
+                            <span className="text-[10px] font-bold text-slate-900 uppercase">GROW CAPITAL PVT. LTD.</span>
                         </div>
 
                         {/* Authorized Signatory */}

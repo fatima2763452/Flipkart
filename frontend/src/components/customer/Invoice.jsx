@@ -554,7 +554,7 @@ export default function Invoice() {
             pdf.setFontSize(9);
             pdf.setTextColor(...redColor);
             const noteText = isClosedAccount 
-                ? 'Note: All your accounts, transaction ledger, and outstanding balances have been fully settled and cleared. Your account has been closed with Radhe Brokerage.'
+                ? 'Note: All your accounts, transaction ledger, and outstanding balances have been fully settled and cleared. Your account has been closed with Grow Capital Pvt Ltd.'
                 : 'Note: All the trades you have taken are listed here. Holdings are not included.';
             const splitNote = pdf.splitTextToSize(noteText, contentW);
             pdf.text(splitNote, marginSize, cursorY);
@@ -564,7 +564,7 @@ export default function Invoice() {
             pdf.setFont(activeFont, 'bold');
             pdf.setFontSize(10);
             pdf.setTextColor(148, 163, 184); // Slate 400
-            pdf.text('RADHE BROKERAGE PVT. LTD.', pageW / 2, cursorY, { align: 'center' });
+            pdf.text('GROW CAPITAL PVT. LTD.', pageW / 2, cursorY, { align: 'center' });
 
             // File Name Safe Formatting
             const safeClientName = (clientName || 'Statement').replace(/[^a-zA-Z0-9]/g, '_');
@@ -802,14 +802,14 @@ export default function Invoice() {
                         
                         <p className="text-sm text-red-500 font-bold leading-relaxed">
                             {isClosedAccount 
-                                ? "Note: All your accounts, transaction ledger, and outstanding balances have been fully settled and cleared. Your account has been closed with Radhe Brokerage."
+                                ? "Note: All your accounts, transaction ledger, and outstanding balances have been fully settled and cleared. Your account has been closed with Grow Capital Pvt Ltd."
                                 : "Note: All the trades you have taken are listed here. Holdings are not included."
                             }
                         </p>
                    
                     
                     <div className="text-center text-[10px] text-slate-400 mt-2 font-bold tracking-widest uppercase">
-                        RADHE BROKERAGE PVT. LTD.
+                        GROW CAPITAL PVT. LTD.
                     </div>
                 </div>
 

@@ -98,7 +98,7 @@ const AccountOpeningForm = () => {
         <form onSubmit={handleSubmit} className="bg-slate-900 border border-slate-800 rounded-xl p-6 md:p-10 shadow-xl">
           <div className="mb-8 border-b border-slate-800 pb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              {/* <img src={logo} alt="Radhe Brokerage Logo" className="h-12 w-auto object-contain mb-2" /> */}
+              {/* <img src={logo} alt="Grow Capital Logo" className="h-12 w-auto object-contain mb-2" /> */}
               <p className="text-blue-400 text-sm font-bold uppercase tracking-wider">Account Opening Form</p>
             </div>
             <div className="text-slate-500 text-sm md:text-right">
@@ -201,7 +201,7 @@ const AccountOpeningForm = () => {
           {/* Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid #1e293b', paddingBottom: '24px', marginBottom: '32px' }}>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <img src={logo} alt="Radhe Brokerage Logo" style={{ height: '140px', width: 'auto', objectFit: 'contain', alignSelf: 'flex-start' }} />
+              <img src={logo} alt="Grow Capital Logo" style={{ height: '140px', width: 'auto', objectFit: 'contain', alignSelf: 'flex-start' }} />
               <p style={{ fontSize: '15px', fontWeight: '700', color: '#334155', margin: '0', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
                 Trading account segment activation
               </p>
@@ -293,25 +293,12 @@ const AccountOpeningForm = () => {
               bottom: '40px',
               left: '40px',
               right: '40px',
-              borderTop: '1px solid #cbd5e1',
-              paddingTop: "20px",
               textAlign: "center"
             }}
           >
             <div
               style={{
-                color: "#dc2626",
-                fontSize: "14px",
-                fontWeight: "700",
-                lineHeight: "24px",
-              }}
-            >
-              <strong>Note:</strong> We are not registered with SEBI. High-leverage trading involves significant financial risk. Please trade at your own risk. The company shall not be responsible for any profit, loss, or financial consequences arising from your trading activities.
-            </div>
-
-            <div
-              style={{
-                marginTop: "16px",
+                marginBottom: "16px",
                 color: "#000000",
                 fontSize: "13px",
                 fontWeight: "700",
@@ -323,15 +310,33 @@ const AccountOpeningForm = () => {
 
             <div
               style={{
-                marginTop: "20px",
-                color: "#000000",
-                fontSize: "13px",
-                fontWeight: "900",
-                letterSpacing: "2px",
-                textTransform: "uppercase"
+                borderTop: '1px solid #cbd5e1',
+                paddingTop: "20px"
               }}
             >
-              RADHE BROKERAGE PVT. LTD.
+              <div
+                style={{
+                  color: "#dc2626",
+                  fontSize: "14px",
+                  fontWeight: "700",
+                  lineHeight: "24px",
+                }}
+              >
+                <strong>Note:</strong> We are not registered with SEBI. High-leverage trading involves significant financial risk. Please trade at your own risk. The company shall not be responsible for any profit, loss, or financial consequences arising from your trading activities.
+              </div>
+
+              <div
+                style={{
+                  marginTop: "20px",
+                  color: "#000000",
+                  fontSize: "13px",
+                  fontWeight: "900",
+                  letterSpacing: "2px",
+                  textTransform: "uppercase"
+                }}
+              >
+                GROW CAPITAL PVT. LTD.
+              </div>
             </div>
           </div>
         </div>
@@ -357,7 +362,7 @@ const AccountOpeningForm = () => {
               {/* Header inside preview */}
               <div className="flex justify-between items-start border-b-2 border-slate-800 pb-4 mb-6">
                 <div className="flex-1 flex flex-col gap-2">
-                  <img src={logo} alt="Radhe Brokerage Logo" className="h-16 w-auto object-contain align-start self-start" />
+                  <img src={logo} alt="Grow Capital Logo" className="h-16 w-auto object-contain align-start self-start" />
                   <p className="text-[12px] font-bold text-slate-600 uppercase tracking-wide m-0">
                     Trading account segment activation
                   </p>
@@ -437,15 +442,17 @@ const AccountOpeningForm = () => {
               </div>
 
               {/* Note */}
-              <div className="mt-8 pt-4 border-t border-slate-200 text-center">
-                <div className="text-red-600 text-[11px] font-bold leading-normal">
-                  <strong>Note:</strong> We are not registered with SEBI. High-leverage trading involves significant financial risk. Please trade at your own risk. The company shall not be responsible for any profit, loss, or financial consequences arising from your trading activities.
-                </div>
-                <div className="mt-3 text-black text-[11px] font-bold leading-normal">
+              <div className="mt-8 text-center">
+                <div className="mb-3 text-black text-[11px] font-bold leading-normal">
                   Congratulations! Your Demat account has been successfully opened with our company.
                 </div>
-                <div className="mt-4 text-black text-[11px] font-extrabold tracking-widest">
-                  RADHE BROKERAGE PVT. LTD.
+                <div className="pt-4 border-t border-slate-200">
+                  <div className="text-red-600 text-[11px] font-bold leading-normal">
+                    <strong>Note:</strong> We are not registered with SEBI. High-leverage trading involves significant financial risk. Please trade at your own risk. The company shall not be responsible for any profit, loss, or financial consequences arising from your trading activities.
+                  </div>
+                  <div className="mt-4 text-black text-[11px] font-extrabold tracking-widest uppercase">
+                    GROW CAPITAL PVT. LTD.
+                  </div>
                 </div>
               </div>
             </div>

@@ -96,8 +96,14 @@ const getCustomers = async (req, res) => {
       return res.status(400).json({ message: 'Owner ID is required' });
     }
 
-    // Only get active (not soft-deleted) customers
-    const customers = await Customer.find({ ownerId, isDeleted: { $ne: true } }).sort({ createdAt: -1 });
+    // Only get active (not soft-deleted) customers matching ownerId or legacy default 'owner_id'
+    const customers = await Customer.find({
+      $or: [
+        { ownerId: ownerId },
+        { ownerId: 'owner_id' }
+      ],
+      isDeleted: { $ne: true }
+    }).sort({ createdAt: -1 });
 
     const customersWithPnl = await Promise.all(
       customers.map(async (cust) => {
@@ -120,8 +126,14 @@ const getDeletedCustomers = async (req, res) => {
       return res.status(400).json({ message: 'Owner ID is required' });
     }
 
-    // Only get soft-deleted customers
-    const customers = await Customer.find({ ownerId, isDeleted: true }).sort({ createdAt: -1 });
+    // Only get soft-deleted customers matching ownerId or legacy default 'owner_id'
+    const customers = await Customer.find({
+      $or: [
+        { ownerId: ownerId },
+        { ownerId: 'owner_id' }
+      ],
+      isDeleted: true
+    }).sort({ createdAt: -1 });
     res.json(customers);
   } catch (error) {
     res.status(500).json({ message: error.message });

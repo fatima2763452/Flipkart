@@ -7,17 +7,17 @@ const customerRoutes = require('./routes/customerRoutes');
 const tradeRoutes = require('./routes/tradeRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Connect Database
 connectDB();
 
 // Middleware
 app.use(cors({
-    origin: function (origin, callback) { callback(null, true); },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+  origin: function (origin, callback) { callback(null, true); },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());

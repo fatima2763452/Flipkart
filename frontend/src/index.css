@@ -11,6 +11,11 @@
   -webkit-font-feature-settings: "zero" 0 !important;
 }
 
+.font-mono, [class*="font-mono"] {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
 .material-symbols-outlined {
   font-family: 'Material Symbols Outlined' !important;
   font-weight: normal;

@@ -6,6 +6,9 @@
 
 * {
   -webkit-tap-highlight-color: transparent !important;
+  font-variant-numeric: no-slashed-zero !important;
+  font-feature-settings: "zero" 0 !important;
+  -webkit-font-feature-settings: "zero" 0 !important;
 }
 
 .material-symbols-outlined {

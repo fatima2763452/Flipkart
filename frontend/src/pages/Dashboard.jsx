@@ -336,11 +336,49 @@ const Dashboard = () => {
       )}
 
       {/* Mobile Header */}
-      <header className="p-4 flex items-center justify-end border-b border-slate-800/60">
-        <div className="flex gap-3 items-center">
-          <button onClick={() => navigate('/account-opening')} className="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 px-3 py-1.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition-colors">
-            <span className="material-symbols-outlined text-[18px]">description</span> Form
+      <header className="p-4 flex items-center justify-between border-b border-slate-800/60">
+        {/* Left top logo */}
+        <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => navigate('/')}>
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/20 border border-blue-400/30">
+            <span className="material-symbols-outlined text-[22px]">trending_up</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="font-bold text-slate-100 tracking-wide text-sm leading-none">TITANIUM</span>
+            <span className="text-[10px] font-semibold text-blue-400 tracking-wider uppercase leading-tight mt-0.5">TRADE</span>
+          </div>
+        </div>
+
+        {/* Right Action Buttons */}
+        <div className="flex gap-2 sm:gap-3 items-center">
+          {/* Calculator Button (Outside) */}
+          <button 
+            onClick={() => setIsAvgCalcOpen(true)} 
+            className="bg-emerald-600/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-600/20 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors"
+            title="Calculator"
+          >
+            <span className="material-symbols-outlined text-[18px]">calculate</span>
+            <span className="hidden xs:inline">Calculator</span>
           </button>
+
+          {/* Recycle Bin Button (Outside) */}
+          <button 
+            onClick={() => navigate('/recycle-bin')} 
+            className="bg-rose-600/10 text-rose-400 border border-rose-500/20 hover:bg-rose-600/20 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors"
+            title="Recycle Bin"
+          >
+            <span className="material-symbols-outlined text-[18px]">delete</span>
+            <span className="hidden xs:inline">Recycle Bin</span>
+          </button>
+
+          {/* Form Button */}
+          <button 
+            onClick={() => navigate('/account-opening')} 
+            className="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors"
+          >
+            <span className="material-symbols-outlined text-[18px]">description</span> 
+            <span>Form</span>
+          </button>
+
           {/* Settings Menu Dropdown */}
           <div className="relative" ref={settingsRef}>
             <button 

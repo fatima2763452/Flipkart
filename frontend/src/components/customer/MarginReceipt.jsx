@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Download } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
 import api from '../../services/api';
 import logo from '../../assets/logo.jpeg';
@@ -99,6 +99,7 @@ const numberToWords = (num) => {
 
 export default function MarginReceipt() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { id: customerId } = useParams();
     const [loading, setLoading] = useState(false);
     const [generated, setGenerated] = useState(false);
@@ -126,7 +127,37 @@ export default function MarginReceipt() {
 
         // Prefill asset caches
         getLogoAsset(logo);
-    }, [customerId]);
+
+        // Fetch Customer details from DB or location state
+        const fetchCustomerDetails = async () => {
+            if (location.state?.customer) {
+                const c = location.state.customer;
+                setClientName(c.name || '');
+                setClientCode(c.customerId || c.id || '');
+                setMobileNumber(c.mobileLast4 || '');
+            }
+
+            try {
+                const userInfoStr = localStorage.getItem('userInfo');
+                if (!userInfoStr) return;
+                const userInfo = JSON.parse(userInfoStr);
+                const ownerId = userInfo?._id;
+                if (!ownerId) return;
+
+                const res = await api.get(`/customers?ownerId=${ownerId}`);
+                const customer = res.data.find(c => c._id === customerId || c.customerId === customerId);
+                if (customer) {
+                    setClientName(customer.name || '');
+                    setClientCode(customer.customerId || '');
+                    setMobileNumber(customer.mobileLast4 || '');
+                }
+            } catch (err) {
+                console.error("Error fetching customer for margin receipt:", err);
+            }
+        };
+
+        fetchCustomerDetails();
+    }, [customerId, location.state]);
 
     // Update Amount in Words as Margin Amount changes
     useEffect(() => {
@@ -139,8 +170,8 @@ export default function MarginReceipt() {
     }, [marginAmount]);
 
     const handleGenerate = () => {
-        if (!clientName || !marginAmount) {
-            alert('Please fill out Client Name and Margin Amount.');
+        if (!marginAmount) {
+            alert('Please fill out Margin Amount.');
             return;
         }
         setGenerated(true);
@@ -408,42 +439,6 @@ export default function MarginReceipt() {
                                         onChange={(e) => setReceiptDate(e.target.value)}
                                         className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm"
                                     />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Client Name</label>
-                                    <input
-                                        type="text"
-                                        value={clientName}
-                                        onChange={(e) => setClientName(e.target.value)}
-                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm font-semibold"
-                                    />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Client ID</label>
-                                        <input
-                                            type="text"
-                                            value={clientCode}
-                                            onChange={(e) => setClientCode(e.target.value)}
-                                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Mobile Number (Last 4 Digits)</label>
-                                        <input
-                                            type="text"
-                                            maxLength={4}
-                                            value={mobileNumber}
-                                            onChange={(e) => {
-                                                const val = e.target.value.replace(/\D/g, '');
-                                                if (val.length <= 4) {
-                                                    setMobileNumber(val);
-                                                }
-                                            }}
-                                            placeholder="e.g. 8888"
-                                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-                                        />
-                                    </div>
                                 </div>
                             </div>
                         </div>

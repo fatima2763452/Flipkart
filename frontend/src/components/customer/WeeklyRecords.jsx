@@ -130,7 +130,7 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
                 STATEMENT
               </button>
               <button 
-                onClick={() => navigate(`/customer/${customer._id}/margin-receipt`)}
+                onClick={() => navigate(`/customer/${customer._id}/margin-receipt`, { state: { customer } })}
                 className="flex-1 bg-[#00B050] hover:bg-[#009040] text-white px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-950/20"
               >
                 <span className="material-symbols-outlined text-[16px]">payments</span>

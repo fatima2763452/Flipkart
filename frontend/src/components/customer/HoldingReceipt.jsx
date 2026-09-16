@@ -176,7 +176,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                 <h3 className={`text-2xl font-black tracking-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                   {holding.symbol}
                 </h3>
-                <div className={`text-lg font-bold mt-0.5 ${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'}`}>
+                <div className={`text-sm  mt-0.5 ${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'}`}>
                   {customer.name || 'User'}
                 </div>
               </div>

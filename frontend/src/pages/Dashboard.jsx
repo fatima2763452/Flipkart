@@ -349,31 +349,43 @@ const Dashboard = () => {
         </div>
 
         {/* Right Action Buttons */}
-        <div className="flex gap-2 sm:gap-3 items-center">
+        <div className="flex gap-1.5 sm:gap-2.5 items-center">
+          {/* Dark / Light Theme Toggle Button (Outside) */}
+          <button 
+            onClick={toggleTheme} 
+            className="bg-indigo-600/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-600/20 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors"
+            title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            <span className="material-symbols-outlined text-[18px]">
+              {isDarkMode ? 'dark_mode' : 'light_mode'}
+            </span>
+            <span className="hidden sm:inline">{isDarkMode ? 'Dark' : 'Light'}</span>
+          </button>
+
           {/* Calculator Button (Outside) */}
           <button 
             onClick={() => setIsAvgCalcOpen(true)} 
-            className="bg-emerald-600/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-600/20 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors"
+            className="bg-emerald-600/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-600/20 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors"
             title="Calculator"
           >
             <span className="material-symbols-outlined text-[18px]">calculate</span>
-            <span className="hidden xs:inline">Calculator</span>
+            <span className="hidden sm:inline">Calculator</span>
           </button>
 
           {/* Recycle Bin Button (Outside) */}
           <button 
             onClick={() => navigate('/recycle-bin')} 
-            className="bg-rose-600/10 text-rose-400 border border-rose-500/20 hover:bg-rose-600/20 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors"
+            className="bg-rose-600/10 text-rose-400 border border-rose-500/20 hover:bg-rose-600/20 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors"
             title="Recycle Bin"
           >
             <span className="material-symbols-outlined text-[18px]">delete</span>
-            <span className="hidden xs:inline">Recycle Bin</span>
+            <span className="hidden sm:inline">Recycle Bin</span>
           </button>
 
           {/* Form Button */}
           <button 
             onClick={() => navigate('/account-opening')} 
-            className="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors"
+            className="bg-blue-600/20 text-blue-400 border border-blue-500/30 hover:bg-blue-600/30 px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-colors"
           >
             <span className="material-symbols-outlined text-[18px]">description</span> 
             <span>Form</span>
@@ -397,7 +409,7 @@ const Dashboard = () => {
                   className="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-200 hover:bg-slate-800 flex items-center justify-between transition-colors"
                 >
                   <span className="flex items-center gap-2.5">
-                    <span className="material-symbols-outlined text-[20px] text-blue-400">
+                    <span className="material-symbols-outlined text-[20px] text-indigo-400">
                       {isDarkMode ? 'dark_mode' : 'light_mode'}
                     </span>
                     {isDarkMode ? 'Dark Mode' : 'Light Mode'}

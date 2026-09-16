@@ -206,67 +206,34 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
           <div className="p-3 sm:p-3">
             {/* Header */}
             <div className={`flex justify-between items-center pb-3 border-b ${theme === 'dark' ? 'border-slate-800' : 'border-slate-200'}`}>
-              <div className="flex items-center gap-3">
-                
-                <div>
-                  <h1 className={`text-xl font-black tracking-tight leading-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                    
-                  </h1>
-                 <div className="flex items-center gap-2 ml-3 mt-1">
-                  <span className={`text-xs font-medium ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
-                    {type.toUpperCase()} 
-                  </span>
-                  <span className={`text-xs font-bold ${isBuy ? 'text-emerald-500' : 'text-rose-500'}`}>
-                    ({productType})
-                  </span>
-                 
-                </div>
-                </div>
+              <div className="flex items-center gap-2">
+                <span className={`text-xs font-medium ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
+                  {type.toUpperCase()}
+                </span>
+                <span className={`text-xs font-bold ${isBuy ? 'text-emerald-500' : 'text-rose-500'}`}>
+                  ({productType})
+                </span>
+              </div>
+              <div className={`text-sm font-bold ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>
+                {formatDate(trade.date)}
               </div>
             </div>
 
-            {/* Asset Name */}
-            <div className="mt-2 mb-2 px-2 flex justify-between items-end">
+            {/* Asset Name & Customer Info */}
+            <div className="mt-2 mb-3 px-2 flex justify-between items-start">
               <div>
-                <h3 className={`text-xl font-bold tracking-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                <h3 className={`text-2xl font-black tracking-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                   {trade.symbol}
                 </h3>
-                <div className="flex items-center gap-2 mt-1">
-                  
+                <div className={`text-lg font-bold mt-0.5 ${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'}`}>
+                  {customer.name || 'User'}
                 </div>
               </div>
               <div className="text-right">
-                <div className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>Qty</div>
-                <span className={`text-l font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{trade.quantity}</span>
-              </div>
-            </div>
-
-            {/* Top Cards Info */}
-            <div className="grid grid-cols-3 gap-3 mb-2">
-              <div className={`p-2 rounded-xl border flex flex-col items-center justify-center text-center ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <div className={`text-[10px] font-bold uppercase tracking-wider mb-2 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
-                  {type.toUpperCase()} DATE
-                </div>
-                <div className={`text-[15px] font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                  {formatDate(trade.date)}
-                </div>
-              </div>
-              <div className={`p-2 rounded-xl border flex flex-col items-center justify-center text-center ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <div className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
-                  Name
-                </div>
-                <div className={`font-bold text-sm leading-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                  {customer.name?.split(' ')[0] || 'User'}
-                </div>
-               
-              </div>
-              <div className={`p-2 rounded-xl border flex flex-col items-center justify-center text-center ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200 shadow-sm'}`}>
-                <div className={`text-[10px] font-bold uppercase tracking-wider mb-2 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
-                  EXECUTED PRICE
-                </div>
-                <div className={`text-[15px] font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                  {formatCurrency(isExit ? trade.ltp : trade.price)}
-                </div>
+                <div className={`text-[10px] font-bold uppercase tracking-wider mb-0.5 ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>QTY</div>
+                <span className={`text-base font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                  {trade.quantity} {trade.lot ? `(${trade.lot})` : ''}
+                </span>
               </div>
             </div>
 
@@ -355,7 +322,7 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                   </div>
                 )}
 
-                <div className={`flex justify-between items-center  border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
+                <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>
                   <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Brokerage</span>
                   {isEditing ? (
                     <div className="flex items-center gap-1.5">
@@ -378,51 +345,27 @@ const TradeReceipt = ({ trade, customer, type, onClose, onEdit }) => {
                     </div>
                   ) : (
                     <span className={`text-sm font-bold flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
-                      {trade.brokerageType === 'percentage' && (
-                        <span className="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">{trade.brokeragePct}%</span>
-                      )}
-                      {trade.brokerageType === 'rupees' && (
-                        <span className="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded">Flat</span>
-                      )}
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${theme === 'dark' ? 'bg-slate-800 text-slate-400' : 'bg-slate-200 text-slate-600'}`}>
+                        0.01%
+                      </span>
                       {formatCurrency(trade.brokerageFee || 0)}
                     </span>
                   )}
                 </div>
 
-                {/* {!isEditing && displayRealizedPnl !== undefined && (
+                {!isEditing && originalRealizedPnl !== undefined && (
                   <div className="flex justify-between items-center pt-1">
-                    <span className={`text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>Realised P&L</span>
-                    <span className={`text-sm font-bold ${displayRealizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                      {displayRealizedPnl >= 0 ? '+' : ''}{formatCurrency(displayRealizedPnl)}
-                      <span className="text-xs ml-1.5 font-semibold">
-                        ({getPnlPercent(displayRealizedPnl, investedAmount)})
+                    <span className={`text-sm font-bold ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>P&L</span>
+                    <span className={`text-sm font-bold ${originalRealizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                      {originalRealizedPnl >= 0 ? '+' : ''}{formatCurrency(originalRealizedPnl)}
+                      <span className="text-xs ml-1.5 font-bold">
+                        ({getPnlPercent(originalRealizedPnl, investedAmount)})
                       </span>
                     </span>
                   </div>
-                )} */}
+                )}
               </div>
             </div>
-
-            {/* Total P&L Footer */}
-            {!isEditing && originalRealizedPnl !== undefined && (
-              <div className={`mt-4 p-4 rounded-xl border flex justify-between items-center ${
-                originalRealizedPnl >= 0 
-                  ? (theme === 'dark' ? 'bg-emerald-950/30 border-emerald-900/50' : 'bg-emerald-50 border-emerald-200')
-                  : (theme === 'dark' ? 'bg-rose-950/30 border-rose-900/50' : 'bg-rose-50 border-rose-200')
-              }`}>
-                <span className={`text-xl font-bold uppercase tracking-wider  ${
-                  originalRealizedPnl >= 0 
-                    ? (theme === 'dark' ? 'text-emerald-400/80' : 'text-emerald-700/80')
-                    : (theme === 'dark' ? 'text-rose-400/80' : 'text-rose-700/80')
-                }`}>P&L</span>
-                <span className={`text-xl font-black tracking-tight ${originalRealizedPnl >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                  {originalRealizedPnl >= 0 ? '+' : ''}{formatCurrency(originalRealizedPnl)}
-                  <span className="text-s ml-2 font-bold">
-                    ({getPnlPercent(originalRealizedPnl, investedAmount)})
-                  </span>
-                </span>
-              </div>
-            )}
             {/* Footer stamp */}
             <div className="mt-3 mb-1 flex flex-col items-center justify-center">
              

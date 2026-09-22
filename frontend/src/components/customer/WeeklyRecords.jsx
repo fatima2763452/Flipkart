@@ -263,8 +263,8 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
                   </div>
                   <div className="text-[10px] text-slate-400 font-medium flex items-center gap-2">
                     <span>QTY: <span className="font-mono text-slate-200 font-semibold">{item.quantity.toLocaleString()}</span></span>
-                    <span className="text-slate-600">•</span>
-                    <span className="text-slate-500">{formatShortDate(item.date || item.createdAt)}</span>
+                    {/* <span className="text-slate-600">•</span>
+                    <span className="text-slate-500">{formatShortDate(item.date || item.createdAt)}</span> */}
                      </div>
                 </div>
               </div>

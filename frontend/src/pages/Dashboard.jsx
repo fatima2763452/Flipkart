@@ -342,10 +342,10 @@ const Dashboard = () => {
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/20 border border-blue-400/30">
             <span className="material-symbols-outlined text-[22px]">trending_up</span>
           </div>
-          <div className="flex flex-col">
+          {/* <div className="flex flex-col">
             <span className="font-bold text-slate-100 tracking-wide text-sm leading-none">TITANIUM</span>
             <span className="text-[10px] font-semibold text-blue-400 tracking-wider uppercase leading-tight mt-0.5">TRADE</span>
-          </div>
+          </div> */}
         </div>
 
         {/* Right Action Buttons */}

@@ -66,7 +66,12 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
     currency: 'INR',
     minimumFractionDigits: 2,
     maximumFractionDigits: 4
-  }).format(val);
+  }).format(val || 0);
+
+  const formatNumber = (val) => new Intl.NumberFormat('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4
+  }).format(val || 0);
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     const d = new Date(dateStr);
@@ -173,10 +178,10 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
             {/* Asset Name & Customer Info */}
             <div className="mt-2 mb-3 px-2 flex justify-between items-start">
               <div>
-                <h3 className={`text-2xl font-black tracking-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+                <h3 className={`text-[15px] font-black tracking-tight ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
                   {holding.symbol}
                 </h3>
-                <div className={`text-sm  mt-0.5 ${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'}`}>
+                <div className={`text-[12px]  mt-0.5 ${theme === 'dark' ? 'text-slate-200' : 'text-slate-800'}`}>
                   {customer.name || 'User'}
                 </div>
               </div>
@@ -231,7 +236,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                   {isEditing ? (
                     <input type="number" className="w-24 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.price} onChange={e => setEditData({ ...editData, price: e.target.value })} />
                   ) : (
-                    <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{formatCurrency(holding.avgCost)}</span>
+                    <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{formatNumber(holding.avgCost)}</span>
                   )}
                 </div>
                 {!isEditing && (
@@ -245,7 +250,7 @@ const HoldingReceipt = ({ customer, holding, onClose, onEdit }) => {
                   {isEditing ? (
                     <input type="number" className="w-24 bg-slate-800 text-white rounded px-2 py-1 text-sm text-right" value={editData.ltp} onChange={e => setEditData({ ...editData, ltp: e.target.value })} />
                   ) : (
-                    <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{formatCurrency(holding.lastPrice)}</span>
+                    <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{formatNumber(holding.lastPrice)}</span>
                   )}
                 </div>
                 <div className={`flex justify-between items-center pb-2 border-b border-solid ${theme === 'dark' ? 'border-slate-600' : 'border-slate-300'}`}>

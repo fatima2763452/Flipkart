@@ -302,7 +302,7 @@ export default function MarginReceipt() {
             pdf.text("Stock Name", 50, gridY + 13);
             pdf.text("Segment", 50, gridY + 33);
             pdf.text("Quantity", 50, gridY + 53);
-            pdf.text("Margin Amount Received", 50, gridY + 73);
+            pdf.text("Margin Amount", 50, gridY + 73);
             pdf.text("Payment Mode", 50, gridY + 93);
             pdf.text("Status", 50, gridY + 113);
 
@@ -484,7 +484,7 @@ export default function MarginReceipt() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Margin Amount Received (₹)</label>
+                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Margin Amount (₹)</label>
                                         <input
                                             type="number"
                                             value={marginAmount}
@@ -648,7 +648,7 @@ export default function MarginReceipt() {
                                         <td className="px-3 py-2 text-slate-800 font-bold">{quantity ? Number(quantity).toLocaleString() : 'N/A'}</td>
                                     </tr>
                                     <tr className="border-b border-slate-200">
-                                        <td className="px-3 py-2 bg-slate-50/50 font-bold text-slate-500 uppercase text-[9px]">Margin Amount Received</td>
+                                        <td className="px-3 py-2 bg-slate-50/50 font-bold text-slate-500 uppercase text-[9px]">Margin Amount</td>
                                         <td className="px-3 py-2 text-slate-900 font-extrabold text-sm">₹ {formatIndianCurrency(marginAmount)}</td>
                                     </tr>
                                     <tr className="border-b border-slate-200">

@@ -75,7 +75,12 @@ const Holdings = ({ customer, onEditRequest }) => {
     currency: 'INR',
     minimumFractionDigits: 2,
     maximumFractionDigits: 4
-  }).format(val);
+  }).format(val || 0);
+
+  const formatNumber = (val) => new Intl.NumberFormat('en-IN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4
+  }).format(val || 0);
 
   const totalEquity = holdings.reduce((sum, item) => sum + item.totalValue, 0);
   const totalUpnl = holdings.reduce((sum, item) => sum + item.upnl, 0);
@@ -216,7 +221,7 @@ const Holdings = ({ customer, onEditRequest }) => {
                 )}
                 <div>
                   <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                    <span className="font-bold text-slate-100 text-base">{item.symbol}</span>
+                    <span className="font-bold text-slate-100 text-[14px]">{item.symbol}</span>
                     <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider border ${item.type === 'Buy' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
                       }`}>
                       {item.type}
@@ -236,8 +241,9 @@ const Holdings = ({ customer, onEditRequest }) => {
                 </div>
               </div>
               <div className="text-right">
-                <div className="font-bold text-slate-100 text-base">{formatCurrency(item.lastPrice)}</div>
-                <div className="text-[10px] text-slate-400">Avg: <span className="text-slate-300">{formatCurrency(item.avgCost)}</span></div>
+                <div className="text-slate-400 text-sm">Avg: <span className="font-mono text-slate-200 font-semibold">{formatNumber(item.avgCost)}</span></div>
+
+                <div className= "text-[10px] text-slate-400">LTP: <span className="font-mono text-slate-200 font-semibold">{formatNumber(item.lastPrice)}</span></div>
               </div>
             </div>
 

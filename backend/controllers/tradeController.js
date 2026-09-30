@@ -101,109 +101,70 @@ const getCustomerHoldings = async (req, res) => {
       return res.status(400).json({ message: 'Customer ID is required' });
     }
 
-    // Only fetch entries for Holdings tab as requested by user
-    const entries = await Entry.find({ customerId }).lean();
+    // Fetch entries for Holdings tab - list each trade entry individually without grouping by symbol
+    const entries = await Entry.find({ customerId }).sort({ date: -1, createdAt: -1 }).lean();
 
-    const allTrades = [
-      ...entries.map(e => ({ ...e, type: 'entry' }))
-    ];
+    const holdings = entries.map(trade => {
+      const qtyNum = trade.quantity || 0;
+      const priceNum = trade.price || 0;
+      const ltpNum = trade.ltp !== undefined && trade.ltp !== null ? trade.ltp : priceNum;
+      const actionStr = (trade.action || 'buy').toLowerCase();
+      const brokerageFee = trade.brokerageFee || 0;
+      const marginRs = trade.marginRs || (trade.marginPct ? (qtyNum * priceNum * trade.marginPct / 100) : 0);
 
-    // Sort by date then createdAt
-    allTrades.sort((a, b) => new Date(a.date) - new Date(b.date) || new Date(a.createdAt) - new Date(b.createdAt));
-
-    const holdingsMap = {};
-
-    allTrades.forEach(trade => {
-      if (!holdingsMap[trade.symbol]) {
-        holdingsMap[trade.symbol] = {
-          symbol: trade.symbol,
-          totalBuyQty: 0,
-          totalBuyCost: 0,
-          totalSellQty: 0,
-          totalSellCost: 0,
-          totalBrokerage: 0,
-          totalMargin: 0,
-          lastPrice: 0,
-          lot: 0
-        };
-      }
-
-      const holding = holdingsMap[trade.symbol];
-      holding.lastPrice = trade.ltp || trade.price; // Fallback to price for older trades
-      if (trade.lot) holding.lot = trade.lot;
-      if (trade.tradeCategory) holding.tradeCategory = trade.tradeCategory;
-      if (trade.customInvested !== undefined) holding.customInvested = trade.customInvested;
-      if (trade.customUpnl !== undefined) holding.customUpnl = trade.customUpnl;
-      if (trade.customTotalPnl !== undefined) holding.customTotalPnl = trade.customTotalPnl;
-      holding.totalBrokerage += (trade.brokerageFee || 0); // Accumulate brokerage
-      holding.lastUpdated = new Date(trade.createdAt || trade.date); // Keep track of latest interaction
-      holding.date = trade.date; // Latest trade date
-      const effectiveMargin = trade.marginRs || (trade.marginPct ? (trade.estimatedTotal * trade.marginPct / 100) : 0);
-      holding.totalMargin += effectiveMargin; // Accumulate margin
-
-      if (trade.action === 'buy') {
-        holding.totalBuyQty += trade.quantity;
-        holding.totalBuyCost += (trade.quantity * trade.price);
-      } else if (trade.action === 'sell') {
-        // This is a Short position entry
-        holding.totalSellQty += trade.quantity;
-        holding.totalSellCost += (trade.quantity * trade.price);
-      }
-    });
-
-    const holdings = Object.values(holdingsMap).map(h => {
-      // Prevent slight floating point errors from leaving micro-positions open
-      if (Math.abs(h.totalBuyQty) < 0.0001) h.totalBuyQty = 0;
-      if (Math.abs(h.totalSellQty) < 0.0001) h.totalSellQty = 0;
-
-      const netQty = h.totalBuyQty - h.totalSellQty;
-      let type = '';
-      let avgCost = 0;
-
-      if (netQty > 0) {
-        type = 'Buy';
-        avgCost = h.totalBuyQty > 0 ? h.totalBuyCost / h.totalBuyQty : 0;
-      } else if (netQty < 0) {
-        type = 'Sell';
-        avgCost = h.totalSellQty > 0 ? h.totalSellCost / h.totalSellQty : 0;
-      } else {
-        type = 'Closed';
-      }
-
-      // Unrealized P/L
+      // Unrealized P/L calculation for this individual trade entry
       let upnl = 0;
-      const absoluteQty = Math.abs(netQty);
-      if (type === 'Buy') {
-        upnl = (h.lastPrice - avgCost) * absoluteQty;
-      } else if (type === 'Sell') {
-        upnl = (avgCost - h.lastPrice) * absoluteQty;
+      if (actionStr === 'buy') {
+        upnl = (ltpNum - priceNum) * qtyNum;
+      } else {
+        upnl = (priceNum - ltpNum) * qtyNum;
       }
+      upnl -= brokerageFee;
 
-      // Deduct total accumulated brokerage from unrealized P/L
-      upnl -= h.totalBrokerage;
+      const totalInvestment = trade.customInvested !== undefined && trade.customInvested !== null 
+        ? trade.customInvested 
+        : (qtyNum * priceNum);
+        
+      const finalUpnl = trade.customUpnl !== undefined && trade.customUpnl !== null 
+        ? trade.customUpnl 
+        : upnl;
+
+      const finalTotalPnl = trade.customTotalPnl !== undefined && trade.customTotalPnl !== null 
+        ? trade.customTotalPnl 
+        : upnl;
+
+      const totalValue = trade.customInvested !== undefined && trade.customInvested !== null
+        ? (trade.customInvested + finalUpnl)
+        : ((qtyNum * priceNum) + finalUpnl);
 
       return {
-        symbol: h.symbol,
-        netQty: absoluteQty,
-        lot: h.lot,
-        type,
-        avgCost,
-        lastPrice: h.lastPrice,
-        totalInvestment: h.customInvested !== undefined ? h.customInvested : absoluteQty * avgCost,
-        totalValue: h.customInvested !== undefined
-          ? (h.customInvested + (h.customUpnl !== undefined ? h.customUpnl : upnl))
-          : (absoluteQty * avgCost + upnl),
-        totalBrokerage: h.totalBrokerage,
-        totalMargin: h.totalMargin,
-        upnl: h.customUpnl !== undefined ? h.customUpnl : upnl,
-        totalPnl: h.customTotalPnl !== undefined ? h.customTotalPnl : upnl,
-        lastUpdated: h.lastUpdated,
-        date: h.date,
-        tradeCategory: h.tradeCategory || 'normal'
+        _id: trade._id,
+        symbol: trade.symbol,
+        netQty: qtyNum,
+        lot: trade.lot || 0,
+        type: actionStr === 'buy' ? 'Buy' : 'Sell',
+        avgCost: priceNum,
+        lastPrice: ltpNum,
+        totalInvestment,
+        totalValue,
+        totalBrokerage: brokerageFee,
+        totalMargin: marginRs,
+        upnl: finalUpnl,
+        totalPnl: finalTotalPnl,
+        lastUpdated: trade.createdAt || trade.date,
+        date: trade.date,
+        tradeCategory: trade.tradeCategory || 'normal',
+        marginPct: trade.marginPct || 0,
+        action: trade.action,
+        quantity: qtyNum,
+        price: priceNum,
+        ltp: ltpNum,
+        brokerageFee,
+        customInvested: trade.customInvested,
+        customUpnl: trade.customUpnl,
+        customTotalPnl: trade.customTotalPnl
       };
-    })
-      .filter(h => h.type !== 'Closed') // Filter out fully exited positions
-      .sort((a, b) => b.lastUpdated - a.lastUpdated); // Sort by most recent activity descending
+    });
 
     res.json(holdings);
   } catch (error) {
@@ -228,13 +189,20 @@ const getWeeklyRecords = async (req, res) => {
 
 const deleteHolding = async (req, res) => {
   try {
-    const { customerId, symbol } = req.params;
+    const { customerId, symbol, id } = req.params;
+
+    // Delete single entry by ID if provided or if customerId parameter contains trade _id
+    const targetId = id || (customerId && customerId.length === 24 && (!symbol || symbol.length === 24) ? customerId : null);
+    if (targetId) {
+      await Entry.findByIdAndDelete(targetId);
+      return res.json({ message: 'Holding deleted successfully' });
+    }
 
     if (!customerId || !symbol) {
       return res.status(400).json({ message: 'Customer ID and Symbol are required' });
     }
 
-    // Delete all entries and exits for this symbol to wipe the holding completely
+    // Delete all entries and exits for this symbol
     await Entry.deleteMany({ customerId, symbol: symbol.toUpperCase() });
     await Exit.deleteMany({ customerId, symbol: symbol.toUpperCase() });
 
@@ -246,73 +214,69 @@ const deleteHolding = async (req, res) => {
 
 const editHolding = async (req, res) => {
   try {
-    const { customerId, symbol } = req.params;
+    const { customerId, symbol, id } = req.params;
     const { quantity, lot, price, ltp, marginRs, brokerageFee, invested, unrealisedPnl, totalPnl, tradeCategory } = req.body;
 
-    // Find the most recent entry for this holding
-    const entries = await Entry.find({ customerId, symbol: symbol.toUpperCase() }).sort({ date: -1 });
-
-    if (entries.length === 0) {
-      return res.status(404).json({ message: 'No entries found for this holding' });
+    let targetEntry;
+    const targetId = id || (customerId && customerId.length === 24 && (!symbol || symbol.length === 24) ? customerId : null);
+    if (targetId) {
+      targetEntry = await Entry.findById(targetId);
+    } else if (customerId && symbol) {
+      const entries = await Entry.find({ customerId, symbol: symbol.toUpperCase() }).sort({ date: -1 });
+      targetEntry = entries[0];
     }
 
-    const latestEntry = entries[0];
+    if (!targetEntry) {
+      return res.status(404).json({ message: 'Holding trade not found' });
+    }
 
-    if (quantity !== undefined) latestEntry.quantity = parseFloat(quantity) || 0;
-    if (lot !== undefined) latestEntry.lot = parseFloat(lot) || 0;
-    if (price !== undefined) latestEntry.price = parseFloat(price) || 0;
-    if (ltp !== undefined) latestEntry.ltp = parseFloat(ltp) || 0;
-    if (marginRs !== undefined) latestEntry.marginRs = parseFloat(marginRs) || 0;
-    if (tradeCategory !== undefined) latestEntry.tradeCategory = tradeCategory;
+    if (quantity !== undefined) targetEntry.quantity = parseFloat(quantity) || 0;
+    if (lot !== undefined) targetEntry.lot = parseFloat(lot) || 0;
+    if (price !== undefined) targetEntry.price = parseFloat(price) || 0;
+    if (ltp !== undefined) targetEntry.ltp = parseFloat(ltp) || 0;
+    if (marginRs !== undefined) targetEntry.marginRs = parseFloat(marginRs) || 0;
+    if (tradeCategory !== undefined) targetEntry.tradeCategory = tradeCategory;
 
     // Custom overrides for display
-    if (invested !== undefined) latestEntry.customInvested = parseFloat(invested) || 0;
-    if (unrealisedPnl !== undefined) latestEntry.customUpnl = parseFloat(unrealisedPnl) || 0;
-    if (totalPnl !== undefined) latestEntry.customTotalPnl = parseFloat(totalPnl) || 0;
+    if (invested !== undefined) targetEntry.customInvested = parseFloat(invested) || 0;
+    if (unrealisedPnl !== undefined) targetEntry.customUpnl = parseFloat(unrealisedPnl) || 0;
+    if (totalPnl !== undefined) targetEntry.customTotalPnl = parseFloat(totalPnl) || 0;
 
-    latestEntry.estimatedTotal = latestEntry.quantity * latestEntry.price;
+    targetEntry.estimatedTotal = targetEntry.quantity * targetEntry.price;
 
     if (brokerageFee !== undefined) {
-      latestEntry.brokerageFee = parseFloat(brokerageFee) || 0;
-      latestEntry.brokerageType = 'rupees';
-      latestEntry.brokerageValue = latestEntry.brokerageFee;
-      latestEntry.brokeragePct = 0;
+      targetEntry.brokerageFee = parseFloat(brokerageFee) || 0;
+      targetEntry.brokerageType = 'rupees';
+      targetEntry.brokerageValue = targetEntry.brokerageFee;
+      targetEntry.brokeragePct = 0;
     } else {
-      if (latestEntry.brokerageType === 'rupees') {
-        latestEntry.brokerageFee = latestEntry.brokerageValue || 0;
-        latestEntry.brokeragePct = 0;
+      if (targetEntry.brokerageType === 'rupees') {
+        targetEntry.brokerageFee = targetEntry.brokerageValue || 0;
+        targetEntry.brokeragePct = 0;
       } else {
-        latestEntry.brokerageFee = (latestEntry.estimatedTotal * (latestEntry.brokerageValue || latestEntry.brokeragePct || 0.01)) / 100;
+        targetEntry.brokerageFee = (targetEntry.estimatedTotal * (targetEntry.brokerageValue || targetEntry.brokeragePct || 0.01)) / 100;
       }
     }
 
-    // Recalculate custom overrides if they exist in the entry so they do not remain stale
-    if (latestEntry.customInvested !== undefined && latestEntry.customInvested !== null) {
-      latestEntry.customInvested = latestEntry.quantity * latestEntry.price;
-    }
-
-    const activeAction = (latestEntry.action || 'buy').toLowerCase();
+    const activeAction = (targetEntry.action || 'buy').toLowerCase();
     let calculatedUpnl = 0;
     if (activeAction === 'buy') {
-      calculatedUpnl = (latestEntry.ltp - latestEntry.price) * latestEntry.quantity;
+      calculatedUpnl = (targetEntry.ltp - targetEntry.price) * targetEntry.quantity;
     } else {
-      calculatedUpnl = (latestEntry.price - latestEntry.ltp) * latestEntry.quantity;
+      calculatedUpnl = (targetEntry.price - targetEntry.ltp) * targetEntry.quantity;
     }
-    calculatedUpnl -= latestEntry.brokerageFee;
+    calculatedUpnl -= targetEntry.brokerageFee;
 
-    if (latestEntry.customUpnl !== undefined && latestEntry.customUpnl !== null) {
-      latestEntry.customUpnl = calculatedUpnl;
+    if (targetEntry.customUpnl !== undefined && targetEntry.customUpnl !== null) {
+      targetEntry.customUpnl = calculatedUpnl;
     }
-    if (latestEntry.customTotalPnl !== undefined && latestEntry.customTotalPnl !== null) {
-      latestEntry.customTotalPnl = calculatedUpnl;
+    if (targetEntry.customTotalPnl !== undefined && targetEntry.customTotalPnl !== null) {
+      targetEntry.customTotalPnl = calculatedUpnl;
     }
 
-    await latestEntry.save();
+    await targetEntry.save();
 
-    // If there are exits for this holding, we might need to update their entry prices? 
-    // Let's keep it simple and just update the entry.
-
-    res.json({ message: 'Holding updated successfully', trade: latestEntry });
+    res.json({ message: 'Holding updated successfully', trade: targetEntry });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

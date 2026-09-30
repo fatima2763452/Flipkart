@@ -14,6 +14,7 @@ const ProtectedRoute = ({ children }) => {
 import CustomerDetail from './pages/CustomerDetail';
 import Invoice from './components/customer/Invoice';
 import MarginReceipt from './components/customer/MarginReceipt';
+import PaymentReceipt from './components/customer/PaymentReceipt';
 import AccountOpeningForm from './pages/AccountOpeningForm';
 import SecretAdmin from './pages/SecretAdmin';
 import RecycleBin from './pages/RecycleBin';
@@ -68,6 +69,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <MarginReceipt />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/customer/:id/payment-receipt" 
+        element={
+          <ProtectedRoute>
+            <PaymentReceipt />
           </ProtectedRoute>
         } 
       />

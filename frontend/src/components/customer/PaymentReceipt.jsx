@@ -97,7 +97,7 @@ const numberToWords = (num) => {
     return result.trim() + ' Only';
 };
 
-export default function MarginReceipt() {
+export default function PaymentReceipt() {
     const navigate = useNavigate();
     const location = useLocation();
     const { id: customerId } = useParams();
@@ -110,21 +110,18 @@ export default function MarginReceipt() {
     const [clientName, setClientName] = useState('');
     const [clientCode, setClientCode] = useState('');
     const [mobileNumber, setMobileNumber] = useState('');
-    const [stockName, setStockName] = useState('');
-    const [exchange, setExchange] = useState('Future');
-    const [quantity, setQuantity] = useState('');
-    const [marginAmount, setMarginAmount] = useState('');
-    const [marginPercentage, setMarginPercentage] = useState('');
-    const [paymentMode, setPaymentMode] = useState('UPI');
-    const [status, setStatus] = useState('Received');
-    const [purpose, setPurpose] = useState('Margin amount received from the client for holding the trade. This margin will remain blocked until the trade is exited.');
+    
+    // Dynamic Payment Details
+    const [paymentType, setPaymentType] = useState('Both'); // Options: 'Both', 'Received Amount', 'Pending Amount'
+    const [receivedAmount, setReceivedAmount] = useState('');
+    const [pendingAmount, setPendingAmount] = useState('');
     const [amountInWords, setAmountInWords] = useState('');
 
     useEffect(() => {
         // Prefill default Receipt No
         const year = new Date().getFullYear();
         const randNum = Math.floor(1000 + Math.random() * 9000);
-        setReceiptNo(`MR-${year}-${randNum}`);
+        setReceiptNo(`PR-${year}-${randNum}`);
 
         // Prefill asset caches
         getLogoAsset(logo);
@@ -153,27 +150,51 @@ export default function MarginReceipt() {
                     setMobileNumber(customer.mobileLast4 || '');
                 }
             } catch (err) {
-                console.error("Error fetching customer for margin receipt:", err);
+                console.error("Error fetching customer for payment receipt:", err);
             }
         };
 
         fetchCustomerDetails();
     }, [customerId, location.state]);
 
-    // Update Amount in Words as Margin Amount changes
+    // Calculate Total Amount based on selected type
+    const getTotalAmount = () => {
+        if (paymentType === 'Both') {
+            return (parseFloat(receivedAmount) || 0) + (parseFloat(pendingAmount) || 0);
+        } else if (paymentType === 'Received Amount') {
+            return parseFloat(receivedAmount) || 0;
+        } else if (paymentType === 'Pending Amount') {
+            return parseFloat(pendingAmount) || 0;
+        }
+        return 0;
+    };
+
+    // Update Amount in Words as Amounts change
     useEffect(() => {
-        const amt = parseFloat(marginAmount);
-        if (!isNaN(amt)) {
-            setAmountInWords(numberToWords(amt));
+        const total = getTotalAmount();
+        if (total > 0) {
+            setAmountInWords(numberToWords(total));
         } else {
             setAmountInWords('');
         }
-    }, [marginAmount]);
+    }, [paymentType, receivedAmount, pendingAmount]);
 
     const handleGenerate = () => {
-        if (!marginAmount) {
-            alert('Please fill out Margin Amount.');
-            return;
+        if (paymentType === 'Both') {
+            if (!receivedAmount && !pendingAmount) {
+                alert('Please fill out Received Amount or Pending Amount.');
+                return;
+            }
+        } else if (paymentType === 'Received Amount') {
+            if (!receivedAmount) {
+                alert('Please fill out Received Amount.');
+                return;
+            }
+        } else if (paymentType === 'Pending Amount') {
+            if (!pendingAmount) {
+                alert('Please fill out Pending Amount.');
+                return;
+            }
         }
         setGenerated(true);
     };
@@ -208,7 +229,7 @@ export default function MarginReceipt() {
 
             cursorY += 75;
 
-            // Centered Margin Receipt Capsule
+            // Centered Payment Receipt Capsule
             const capsuleW = 160;
             const capsuleH = 22;
             const capsuleX = (pageW - capsuleW) / 2;
@@ -218,7 +239,7 @@ export default function MarginReceipt() {
             pdf.setTextColor(255, 255, 255);
             pdf.setFont(activeFont, 'bold');
             pdf.setFontSize(10);
-            pdf.text("MARGIN RECEIPT", pageW / 2, cursorY + 14, { align: 'center' });
+            pdf.text("PAYMENT RECEIPT", pageW / 2, cursorY + 14, { align: 'center' });
 
             cursorY += 40;
 
@@ -275,81 +296,52 @@ export default function MarginReceipt() {
             const displayMobile = mobileNumber ? `XXXXXX${mobileNumber}` : 'N/A';
             pdf.text(displayMobile, 130, clientCardY + 44);
 
-            cursorY = clientCardY + clientCardH + 15;
+            cursorY = clientCardY + clientCardH + 20;
 
-            // MARGIN DETAILS Section
+            // PAYMENT DETAILS Section
             pdf.setFillColor(0, 8, 57);
             pdf.roundedRect(40, cursorY, 100, 18, 3, 3, 'F');
             pdf.setTextColor(255, 255, 255);
             pdf.setFontSize(8);
             pdf.setFont(activeFont, 'bold');
-            pdf.text("MARGIN DETAILS", 45, cursorY + 12);
+            pdf.text("PAYMENT DETAILS", 45, cursorY + 12);
 
             const gridY = cursorY + 24;
-            const gridRowH = 20;
-            const gridH = gridRowH * 7;
+            const gridRowH = 22;
+
+            const rows = [];
+            if (paymentType === 'Both' || paymentType === 'Received Amount') {
+                rows.push({ label: 'Received Amount', value: `Rs. ${formatIndianCurrency(receivedAmount)}` });
+            }
+            if (paymentType === 'Both' || paymentType === 'Pending Amount') {
+                rows.push({ label: 'Pending Amount', value: `Rs. ${formatIndianCurrency(pendingAmount)}` });
+            }
+
+            const gridH = gridRowH * rows.length;
             pdf.setDrawColor(226, 232, 240);
             pdf.rect(40, gridY, pageW - 80, gridH, 'D');
 
             // Draw horizontal lines in table
-            for (let i = 1; i < 7; i++) {
+            for (let i = 1; i < rows.length; i++) {
                 pdf.line(40, gridY + i * gridRowH, pageW - 40, gridY + i * gridRowH);
             }
             // Draw vertical column divider
             pdf.line(160, gridY, 160, gridY + gridH);
 
-            pdf.setTextColor(100, 116, 139);
-            pdf.setFont(activeFont, 'normal');
-            pdf.text("Stock Name", 50, gridY + 13);
-            pdf.text("Segment", 50, gridY + 33);
-            pdf.text("Quantity", 50, gridY + 53);
-            pdf.text("Margin Percentage", 50, gridY + 73);
-            pdf.text("Margin Amount", 50, gridY + 93);
-            pdf.text("Payment Mode", 50, gridY + 113);
-            pdf.text("Status", 50, gridY + 133);
+            rows.forEach((row, idx) => {
+                const rowY = gridY + idx * gridRowH + 15;
+                pdf.setTextColor(100, 116, 139);
+                pdf.setFont(activeFont, 'normal');
+                pdf.text(row.label, 50, rowY);
 
-            pdf.setTextColor(15, 23, 42);
-            pdf.text(":", 150, gridY + 13);
-            pdf.text(":", 150, gridY + 33);
-            pdf.text(":", 150, gridY + 53);
-            pdf.text(":", 150, gridY + 73);
-            pdf.text(":", 150, gridY + 93);
-            pdf.text(":", 150, gridY + 113);
-            pdf.text(":", 150, gridY + 133);
+                pdf.setTextColor(15, 23, 42);
+                pdf.text(":", 150, rowY);
 
-            pdf.setFont(activeFont, 'bold');
-            pdf.text(stockName || 'N/A', 170, gridY + 13);
-            pdf.text(exchange || 'N/A', 170, gridY + 33);
-            pdf.text(quantity ? String(quantity) : 'N/A', 170, gridY + 53);
-            pdf.text(marginPercentage ? `${marginPercentage}%` : 'N/A', 170, gridY + 73);
-            pdf.text(`Rs. ${formatIndianCurrency(marginAmount)}`, 170, gridY + 93);
-            pdf.setFont(activeFont, 'normal');
-            pdf.text(paymentMode, 170, gridY + 113);
-            pdf.setFont(activeFont, 'bold');
-            pdf.text(status, 170, gridY + 133);
+                pdf.setFont(activeFont, 'bold');
+                pdf.text(row.value, 170, rowY);
+            });
 
-            cursorY = gridY + gridH + 15;
-
-            // PURPOSE Section
-            pdf.setFillColor(0, 8, 57);
-            pdf.roundedRect(40, cursorY, 70, 18, 3, 3, 'F');
-            pdf.setTextColor(255, 255, 255);
-            pdf.setFontSize(8);
-            pdf.setFont(activeFont, 'bold');
-            pdf.text("PURPOSE", 45, cursorY + 12);
-
-            const purposeCardY = cursorY + 24;
-            const purposeCardH = 40;
-            pdf.setDrawColor(226, 232, 240);
-            pdf.roundedRect(40, purposeCardY, pageW - 80, purposeCardH, 5, 5, 'D');
-
-            pdf.setTextColor(15, 23, 42);
-            pdf.setFont(activeFont, 'normal');
-            pdf.setFontSize(7.5);
-            const purposeLines = pdf.splitTextToSize(purpose, pageW - 100);
-            pdf.text(purposeLines, 50, purposeCardY + 15);
-
-            cursorY = purposeCardY + purposeCardH + 15;
+            cursorY = gridY + gridH + 30;
 
             // Amount in Words
             pdf.setTextColor(100, 116, 139);
@@ -365,29 +357,24 @@ export default function MarginReceipt() {
 
             cursorY += 35;
 
-            // Bottom Section (Dashed ₹ Box, Received By & Stamp, Authorized Signatory)
+            // Bottom Section
             const footerY = cursorY + 10;
 
-            // Currency text (Left)
+            // Currency text (Left) - Only show for single input
+            if (paymentType === 'Received Amount') {
+                pdf.setFont(activeFont, 'bold');
+                pdf.setFontSize(13);
+                pdf.text(`Rs. ${formatIndianCurrency(receivedAmount)}`, 40, footerY + 26);
+            } else if (paymentType === 'Pending Amount') {
+                pdf.setFont(activeFont, 'bold');
+                pdf.setFontSize(13);
+                pdf.text(`Rs. ${formatIndianCurrency(pendingAmount)}`, 40, footerY + 26);
+            }
+
+            // Received By
+            const centerColX = 280;
+            pdf.setFontSize(8);
             pdf.setFont(activeFont, 'bold');
-            pdf.setFontSize(13);
-            pdf.text(`Rs. ${formatIndianCurrency(marginAmount)}`, 40, footerY + 26);
-
-            // Received By (Center)
-            // const centerColX = 280;
-            // pdf.setFontSize(8);
-            // pdf.setFont(activeFont, 'bold');
-            // pdf.text("Received By", centerColX, footerY + 12, { align: 'center' });
-            // pdf.setFontSize(7.5);
-            // pdf.text("GROW CAPITAL PVT. LTD.", centerColX, footerY + 22, { align: 'center' });
-
-            // // Authorized Signatory (Right)
-            // const rightColX = pageW - 40 - 60;
-            // pdf.setFontSize(8);
-            // pdf.setFont(activeFont, 'bold');
-            // pdf.text("Authorized Signatory", rightColX + 30, footerY + 70, { align: 'center' });
-            // pdf.setDrawColor(200, 200, 200);
-            // pdf.line(rightColX - 30, footerY + 54, rightColX + 90, footerY + 54);
 
             // Bottom Disclaimer Note
             const noteY = 740;
@@ -398,7 +385,7 @@ export default function MarginReceipt() {
             pdf.setFont(activeFont, 'normal');
             pdf.setFontSize(6.5);
             pdf.setTextColor(100, 116, 139);
-            const disclaimerNote = "Note: margin has received, it will be block until trade exit, after trade exit it will be free";
+            const disclaimerNote = "Note: payment has received, it will be block until trade exit, after trade exit it will be free";
             const noteLines = pdf.splitTextToSize(disclaimerNote, pageW - 100);
             pdf.text(noteLines, 50, noteY + 11);
 
@@ -410,7 +397,7 @@ export default function MarginReceipt() {
 
             // Save PDF
             const safeClientName = (clientName || 'Client').replace(/[^a-zA-Z0-9]/g, '_');
-            pdf.save(`${safeClientName}_Margin_Receipt_${receiptNo}.pdf`);
+            pdf.save(`${safeClientName}_Payment_Receipt_${receiptNo}.pdf`);
 
         } catch (error) {
             console.error('PDF Error:', error);
@@ -428,7 +415,7 @@ export default function MarginReceipt() {
                         <button onClick={() => navigate(-1)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-900 rounded-full text-slate-700 dark:text-white transition-colors">
                             <ArrowLeft className="w-5 h-5" />
                         </button>
-                        <h1 className="text-xl font-bold text-slate-900 dark:text-white">Create Margin Receipt</h1>
+                        <h1 className="text-xl font-bold text-slate-900 dark:text-white">Create Payment Receipt</h1>
                     </div>
 
                     <div className="space-y-4">
@@ -448,94 +435,47 @@ export default function MarginReceipt() {
                         </div>
 
                         <div className="border-t border-slate-100 dark:border-slate-700 pt-3">
-                            <h3 className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2">Margin Details</h3>
-                            <div className="space-y-3">
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Stock Name</label>
-                                        <input
-                                            type="text"
-                                            value={stockName}
-                                            onChange={(e) => setStockName(e.target.value)}
-                                            placeholder="e.g. RELIANCE"
-                                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Segment</label>
-                                        <select
-                                            value={exchange}
-                                            onChange={(e) => setExchange(e.target.value)}
-                                            className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-                                        >
-                                            <option value="Future">Future</option>
-                                            <option value="Option">Option</option>
-                                            <option value="Equity">Equity</option>
-                                            <option value="MCX">MCX</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Quantity</label>
-                                        <input
-                                            type="number"
-                                            value={quantity}
-                                            onChange={(e) => setQuantity(e.target.value)}
-                                            placeholder="e.g. 500"
-                                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Margin Percentage (%)</label>
-                                        <input
-                                            type="number"
-                                            value={marginPercentage}
-                                            onChange={(e) => setMarginPercentage(e.target.value)}
-                                            placeholder="e.g. 20"
-                                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm font-semibold"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Margin Amount (₹)</label>
-                                        <input
-                                            type="number"
-                                            value={marginAmount}
-                                            onChange={(e) => setMarginAmount(e.target.value)}
-                                            placeholder="e.g. 100000"
-                                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm font-semibold"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Payment Mode</label>
-                                        <select
-                                            value={paymentMode}
-                                            onChange={(e) => setPaymentMode(e.target.value)}
-                                            className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm"
-                                        >
-                                            <option value="Cash / UPI / Bank Transfer">Cash / UPI / Bank Transfer</option>
-                                            <option value="UPI">UPI</option>
-                                            <option value="Bank Transfer">Bank Transfer</option>
-                                            <option value="Cash">Cash</option>
-                                        </select>
-                                    </div>
-                                </div>
-
+                            <h3 className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2">Payment Details</h3>
+                            <div className="space-y-4">
                                 <div>
-                                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Status</label>
+                                    <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Select Payment Type</label>
                                     <select
-                                        value={status}
-                                        onChange={(e) => setStatus(e.target.value)}
-                                        className="w-full bg-black border border-black rounded-lg py-2 px-3 text-white focus:ring-2 focus:ring-black outline-none text-sm font-semibold appearance-none cursor-pointer"
-                                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
+                                        value={paymentType}
+                                        onChange={(e) => setPaymentType(e.target.value)}
+                                        className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2.5 px-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm font-semibold cursor-pointer"
                                     >
-                                        <option value="Received">Received</option>
-                                        <option value="Pending">Pending</option>
+                                        <option value="Both">Both (Received & Pending)</option>
+                                        <option value="Received Amount">Received Amount</option>
+                                        <option value="Pending Amount">Pending Amount</option>
                                     </select>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {(paymentType === 'Both' || paymentType === 'Received Amount') && (
+                                        <div>
+                                            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Received Amount (₹)</label>
+                                            <input
+                                                type="number"
+                                                value={receivedAmount}
+                                                onChange={(e) => setReceivedAmount(e.target.value)}
+                                                placeholder="e.g. 50000"
+                                                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm font-semibold"
+                                            />
+                                        </div>
+                                    )}
+
+                                    {(paymentType === 'Both' || paymentType === 'Pending Amount') && (
+                                        <div>
+                                            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Pending Amount (₹)</label>
+                                            <input
+                                                type="number"
+                                                value={pendingAmount}
+                                                onChange={(e) => setPendingAmount(e.target.value)}
+                                                placeholder="e.g. 20000"
+                                                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg py-2 px-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none text-sm font-semibold"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -595,16 +535,13 @@ export default function MarginReceipt() {
                     <div className="flex justify-between items-start pb-4">
                         <div>
                             <img src={logo} alt="Grow Capital Logo" className="h-15 w-auto object-contain" />
-                            <p className="text-[7.5px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1 pl-1">
-                               
-                            </p>
                         </div>
                     </div>
 
                     {/* Centered Capsule Title */}
                     <div className="flex justify-center my-6">
                         <div className="bg-[#000839] text-white px-6 py-1.5 rounded-full font-bold text-xs uppercase tracking-wider">
-                            MARGIN RECEIPT
+                            PAYMENT RECEIPT
                         </div>
                     </div>
 
@@ -643,54 +580,28 @@ export default function MarginReceipt() {
                         </div>
                     </div>
 
-                    {/* Margin Details Section */}
+                    {/* Payment Details Section */}
                     <div className="mb-6">
                         <div className="bg-[#000839] text-white px-3 py-1 rounded inline-block font-bold text-[9px] uppercase tracking-wider mb-2">
-                            MARGIN DETAILS
+                            PAYMENT DETAILS
                         </div>
                         <div className="border border-slate-200 rounded-lg overflow-hidden">
                             <table className="w-full text-xs text-left border-collapse">
                                 <tbody>
-                                    <tr className="border-b border-slate-200">
-                                        <td className="w-40 px-3 py-2 bg-slate-50/50 font-bold text-slate-500 uppercase text-[9px]">Stock Name</td>
-                                        <td className="px-3 py-2 font-bold text-slate-900">{stockName || 'N/A'}</td>
-                                    </tr>
-                                    <tr className="border-b border-slate-200">
-                                        <td className="px-3 py-2 bg-slate-50/50 font-bold text-slate-500 uppercase text-[9px]">Exchange</td>
-                                        <td className="px-3 py-2 text-slate-800">{exchange || 'N/A'}</td>
-                                    </tr>
-                                    <tr className="border-b border-slate-200">
-                                        <td className="px-3 py-2 bg-slate-50/50 font-bold text-slate-500 uppercase text-[9px]">Quantity</td>
-                                        <td className="px-3 py-2 text-slate-800 font-bold">{quantity ? Number(quantity).toLocaleString() : 'N/A'}</td>
-                                    </tr>
-                                    <tr className="border-b border-slate-200">
-                                        <td className="px-3 py-2 bg-slate-50/50 font-bold text-slate-500 uppercase text-[9px]">Margin Percentage</td>
-                                        <td className="px-3 py-2 text-slate-900 font-bold">{marginPercentage ? `${marginPercentage}%` : 'N/A'}</td>
-                                    </tr>
-                                    <tr className="border-b border-slate-200">
-                                        <td className="px-3 py-2 bg-slate-50/50 font-bold text-slate-500 uppercase text-[9px]">Margin Amount</td>
-                                        <td className="px-3 py-2 text-slate-900 font-extrabold text-sm">₹ {formatIndianCurrency(marginAmount)}</td>
-                                    </tr>
-                                    <tr className="border-b border-slate-200">
-                                        <td className="px-3 py-2 bg-slate-50/50 font-bold text-slate-500 uppercase text-[9px]">Payment Mode</td>
-                                        <td className="px-3 py-2 text-slate-800">{paymentMode}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="px-3 py-2 bg-slate-50/50 font-bold text-slate-500 uppercase text-[9px]">Status</td>
-                                        <td className="px-3 py-2 text-slate-800 font-bold">{status}</td>
-                                    </tr>
+                                    {(paymentType === 'Both' || paymentType === 'Received Amount') && (
+                                        <tr className={paymentType === 'Both' ? "border-b border-slate-200" : ""}>
+                                            <td className="w-40 px-3 py-2.5 bg-slate-50/50 font-bold text-slate-500 uppercase text-[9px]">Received Amount</td>
+                                            <td className="px-3 py-2.5 font-bold text-slate-900 text-sm">₹ {formatIndianCurrency(receivedAmount)}</td>
+                                        </tr>
+                                    )}
+                                    {(paymentType === 'Both' || paymentType === 'Pending Amount') && (
+                                        <tr>
+                                            <td className="w-40 px-3 py-2.5 bg-slate-50/50 font-bold text-slate-500 uppercase text-[9px]">Pending Amount</td>
+                                            <td className="px-3 py-2.5 font-bold text-slate-900 text-sm">₹ {formatIndianCurrency(pendingAmount)}</td>
+                                        </tr>
+                                    )}
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-
-                    {/* Purpose Section */}
-                    <div className="mb-6">
-                        <div className="bg-[#000839] text-white px-3 py-1 rounded inline-block font-bold text-[9px] uppercase tracking-wider mb-2">
-                            PURPOSE
-                        </div>
-                        <div className="border border-slate-200 rounded-xl p-3.5 bg-slate-50/30 text-[10px] leading-relaxed text-slate-700">
-                            {purpose}
                         </div>
                     </div>
 
@@ -704,20 +615,24 @@ export default function MarginReceipt() {
 
                     {/* Footer Box, Seal and Signatures */}
                     <div className="flex justify-between items-end mt-8">
-                        {/* Currency Dash Box */}
-                       
-                            <span className="text-sm font-black text-[#000839]">
-                                ₹ {formatIndianCurrency(marginAmount)}
-                            </span>
-                        
+                        <div>
+                            {paymentType === 'Received Amount' && (
+                                <span className="text-sm font-black text-[#000839]">
+                                    ₹ {formatIndianCurrency(receivedAmount)}
+                                </span>
+                            )}
+                            {paymentType === 'Pending Amount' && (
+                                <span className="text-sm font-black text-[#000839]">
+                                    ₹ {formatIndianCurrency(pendingAmount)}
+                                </span>
+                            )}
+                        </div>
 
-                        {/* Received By and Stamp placeholder */}
                         <div className="flex flex-col items-center justify-center relative w-44 select-none mb-1">
                             <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Received By</span>
                             <span className="text-[10px] font-bold text-slate-900 uppercase">GROW CAPITAL PVT. LTD.</span>
                         </div>
 
-                        {/* Authorized Signatory */}
                         <div className="flex flex-col items-end w-44 relative pr-2">
                             <div className="h-12 w-32 relative select-none flex items-center justify-center">
                             </div>
@@ -729,7 +644,7 @@ export default function MarginReceipt() {
 
                 {/* Bottom Disclaimer */}
                 <div className="relative z-10 border border-slate-200 rounded-lg p-2.5 bg-slate-50/50 text-[8.5px] leading-relaxed text-slate-400 mt-6">
-                    Note: margin has received, it will be block until trade exit, after trade exit it will be free
+                    Note: payment has received, it will be block until trade exit, after trade exit it will be free
                 </div>
 
                 {/* Corner Design Accent */}

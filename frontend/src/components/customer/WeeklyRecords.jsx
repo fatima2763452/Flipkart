@@ -126,20 +126,27 @@ const WeeklyRecords = ({ customer, onEditRequest }) => {
             </div>
 
             {/* Horizontal Buttons Below */}
-            <div className="flex gap-2.5 pt-3 border-t border-slate-800">
+            <div className="flex gap-2 pt-3 border-t border-slate-800">
               <button 
                 onClick={() => navigate(`/customer/${customer._id}/invoice`)}
-                className="flex-1 bg-blue-600 hover:bg-blue-500 text-white px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-lg shadow-blue-900/20"
+                className="flex-1 bg-blue-600 hover:bg-blue-500 text-white px-2 py-2 rounded-lg text-[11px] font-bold transition-colors flex items-center justify-center gap-1 shadow-lg shadow-blue-900/20"
               >
-                <span className="material-symbols-outlined text-[16px]">receipt_long</span>
+                <span className="material-symbols-outlined text-[15px]">receipt_long</span>
                 STATEMENT
               </button>
               <button 
                 onClick={() => navigate(`/customer/${customer._id}/margin-receipt`, { state: { customer } })}
-                className="flex-1 bg-[#00B050] hover:bg-[#009040] text-white px-3 py-2 rounded-lg text-xs font-bold transition-colors flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-950/20"
+                className="flex-1 bg-[#00B050] hover:bg-[#009040] text-white px-2 py-2 rounded-lg text-[11px] font-bold transition-colors flex items-center justify-center gap-1 shadow-lg shadow-emerald-950/20"
               >
-                <span className="material-symbols-outlined text-[16px]">payments</span>
+                <span className="material-symbols-outlined text-[15px]">payments</span>
                 MARGIN RECEIPT
+              </button>
+              <button 
+                onClick={() => navigate(`/customer/${customer._id}/payment-receipt`, { state: { customer } })}
+                className="flex-1 bg-purple-600 hover:bg-purple-500 text-white px-2 py-2 rounded-lg text-[11px] font-bold transition-colors flex items-center justify-center gap-1 shadow-lg shadow-purple-950/20"
+              >
+                <span className="material-symbols-outlined text-[15px]">receipt</span>
+                PAYMENT RECEIPT
               </button>
             </div>
           </div>
